@@ -1,0 +1,29 @@
+<Solution>
+  <Folder Name="/Application/" />
+  <Folder Name="/Application/Platforms/">
+    <Project Path="src/DreamNumbers.App/DreamNumbers.App.csproj">
+      <Deploy Solution="Debug|*" />
+    </Project>
+    <Project Path="src/DreamNumbers.Web/DreamNumbers.Web.csproj" />
+  </Folder>
+  <Folder Name="/Application/UI/">
+    <Project Path="src/DreamNumbers.UI/DreamNumbers.UI.csproj" />
+  </Folder>
+  <Folder Name="/Domain/" />
+  <Folder Name="/Domain/Abstractions/">
+    <Project Path="src/DreamNumbers.Abstractions/DreamNumbers.Abstractions.csproj" Id="04737727-5f32-4f70-b40b-8f2d200764ac" />
+    <Project Path="src/DreamNumbers.Services.Abstractions/DreamNumbers.Services.Abstractions.csproj" Id="b1ec67be-5112-4a1c-b64c-6ef0b6ee740b" />
+    <Project Path="src/DreamNumbers.Storages.Abstractions/DreamNumbers.Storages.Abstractions.csproj" Id="9f0f1dbf-6e14-411b-964e-8fd59d09df68" />
+  </Folder>
+  <Folder Name="/Domain/Core/">
+    <Project Path="src/DreamNumbers.Core/DreamNumbers.Core.csproj" Id="90754f2a-ca34-4ffd-a643-909dcd0f80c9" />
+  </Folder>
+  <Folder Name="/Infrastructure/" />
+  <Folder Name="/Infrastructure/Services/">
+    <Project Path="src/DreamNumbers.Services.JSC/DreamNumbers.Services.JSC.csproj" Id="16f63862-8f82-456b-bca8-0f34470c66ca" />
+  </Folder>
+  <Folder Name="/Infrastructure/Storages/">
+    <Project Path="src/DreamNumbers.Storages.EFCore.SQLite/DreamNumbers.Storages.EFCore.SQLite.csproj" Id="65cb7e0f-ef80-4f42-ab83-c78516e6cd07" />
+    <Project Path="src/DreamNumbers.Storages.EFCore/DreamNumbers.Storages.EFCore.csproj" Id="4a0f979d-6a90-4e8d-908d-d751ac16ddf2" />
+  </Folder>
+</Solution>
