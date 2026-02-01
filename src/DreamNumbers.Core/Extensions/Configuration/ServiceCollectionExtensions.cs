@@ -1,5 +1,6 @@
 using DreamNumbers.ScheduledTasks;
 using DreamNumbers.Services;
+using DreamNumbers.SimulationStrategies;
 using Marquitos.Schedulers;
 using Marquitos.Schedulers.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,15 +23,15 @@ namespace DreamNumbers.Extensions.Configuration
             });
 
             // Application services
-            //services.AddScoped<IStatisticsService, StatisticsService>();
-            //services.AddScoped<ISimulationEngine, SimulationEngine>();
+            services.AddScoped<IStatisticsService, StatisticsService>();
+            services.AddScoped<ISimulationEngine, SimulationEngine>();
             services.AddScoped<IDrawUpdateService, DrawUpdateService>();
 
             // Strategies
-            //services.AddSingleton<ISimulationStrategy, AbsenceStrategy>();
-            //services.AddSingleton<ISimulationStrategy, FrequencyStrategy>();
-            //services.AddSingleton<ISimulationStrategy, HybridStrategy>();
-            //services.AddSingleton<ISimulationStrategy, ExponentialAbsenceStrategy>();
+            services.AddSingleton<ISimulationStrategy, AbsenceStrategy>();
+            services.AddSingleton<ISimulationStrategy, FrequencyStrategy>();
+            services.AddSingleton<ISimulationStrategy, HybridStrategy>();
+            services.AddSingleton<ISimulationStrategy, ExponentialAbsenceStrategy>();
 
             return services;
         }

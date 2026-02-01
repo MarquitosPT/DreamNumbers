@@ -1,5 +1,75 @@
-﻿<h3>Simulation</h3>
+@page "/simulation"
+
+@inject IDrawStorage DrawRepository
+@inject IStatisticsService StatisticsService
+@inject ISimulationEngine SimulationEngine
+@inject IEnumerable<ISimulationStrategy> StrategyProvider
+
+<h2>Simulation Engine</h2>
+
+<div class="mb-3">
+    <label>Interval:</label>
+    <select class="form-select w-auto" @bind="interval">
+        <option value="20">Last 20</option>
+        <option value="40">Last 40</option>
+        <option value="60">Last 60</option>
+    </select>
+</div>
+
+<div class="mb-3">
+    <label>Number of combinations:</label>
+    <input type="number" class="form-control w-auto" @bind="count" min="1" max="100" />
+</div>
+
+<select class="form-select w-auto" @bind="selectedStrategyName">
+    @foreach (var s in strategies)
+    {
+        <option value="@s.Name">@s.Name</option>
+    }
+</select>
+
+<button class="btn btn-primary" @onclick="RunSimulation">Generate</button>
+
+@if (results != null)
+{
+    <h4 class="mt-4">Generated Combinations</h4>
+
+    <ul>
+        @foreach (var combo in results.Combinations)
+        {
+            <li>@string.Join(", ", combo)</li>
+        }
+    </ul>
+}
 
 @code {
+    private int interval = 60;
+    private int count = 10;
+    private SimulationResult results;
 
+    private IEnumerable<ISimulationStrategy> strategies;
+    private string selectedStrategyName;
+
+    protected override async Task OnInitializedAsync()
+    {
+        strategies = StrategyProvider.ToList();
+        selectedStrategyName = strategies.First().Name;
+    }
+
+    private async Task RunSimulation()
+    {
+        var draws = await DrawRepository.GetAllAsync();
+        var stats = StatisticsService.CalculateStatistics(draws);
+
+        var strategy = strategies.First(s => s.Name == selectedStrategyName);
+
+        var request = new SimulationRequest
+        {
+            Interval = interval,
+            NumberOfCombinations = count
+        };
+
+        results = SimulationEngine.Generate(request, stats, strategy);
+    }
 }
+

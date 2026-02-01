@@ -17,7 +17,7 @@ namespace DreamNumbers
                 .AddInteractiveServerComponents();
 
             builder.Services.AddDreamNumbersCore();
-            builder.Services.AddDreamNumbersStorage("Data Source=dreamnumbers.db");
+            builder.Services.AddDreamNumbersStorage("Data Source=data\\dreamnumbers.db");
 
             // Add device-specific services used by the DreamNumbers.Shared project
             builder.Services.AddSingleton<IFormFactor, FormFactor>();

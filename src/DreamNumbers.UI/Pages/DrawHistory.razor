@@ -1,5 +1,75 @@
-﻿<h3>DrawHistory</h3>
+@page "/draws"
+
+@inject IDrawStorage DrawRepository
+
+<h2>Draw History</h2>
+
+<div class="mb-3">
+    <label>Filter Interval:</label>
+    <select class="form-select w-auto" @bind="selectedInterval">
+        <option value="20">Last 20</option>
+        <option value="40">Last 40</option>
+        <option value="60">Last 60</option>
+        <option value="0">All</option>
+    </select>
+</div>
+
+@if (filteredDraws == null)
+{
+    <p>Loading draws...</p>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Numbers</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var draw in filteredDraws)
+            {
+                <tr>
+                    <td>@draw.Date.ToString("yyyy-MM-dd")</td>
+                    <td>@string.Join(", ", draw.Numbers)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
+    private List<Draw> allDraws;
+    private List<Draw> filteredDraws;
+    private int selectedInterval = 0;
 
+    protected override async Task OnInitializedAsync()
+    {
+        allDraws = await DrawRepository.GetAllAsync();
+        ApplyFilter();
+    }
+
+    private void ApplyFilter()
+    {
+        if (selectedInterval == 0)
+        {
+            filteredDraws = allDraws
+                .OrderByDescending(d => d.Date)
+                .ToList();
+        }
+        else
+        {
+            filteredDraws = allDraws
+                .OrderByDescending(d => d.Date)
+                .Take(selectedInterval)
+                .ToList();
+        }
+    }
+
+    private void OnIntervalChanged(ChangeEventArgs e)
+    {
+        selectedInterval = int.Parse(e.Value.ToString());
+        ApplyFilter();
+    }
 }

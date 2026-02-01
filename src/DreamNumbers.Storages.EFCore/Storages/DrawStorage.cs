@@ -62,7 +62,14 @@ namespace DreamNumbers.Storages.EFCore.Storages
 
         public async Task<List<Draw>> GetAllAsync()
         {
-            var result = await Context.Draws.ToListAsync();
+            //var result = await Context.Draws.ToListAsync();
+
+            var result = new List<Draw>()
+            {
+                    new() { Id=1, Date = new DateTime(2025,1,1), Numbers = { 2, 5, 29, 36, 13 } },
+                    new() { Id=2, Date = new DateTime(2025,1,7), Numbers = { 2, 5, 29, 36, 13 } },
+                    new() { Id=3, Date = new DateTime(2025,1,15), Numbers = { 2, 5, 29, 36, 13 } }
+            };
 
             return result.Select(e => new Draw
             {
