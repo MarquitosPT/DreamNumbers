@@ -29,7 +29,7 @@ namespace DreamNumbers.Services
             var pool = BuildWeightedPool(stats, strategy);
             var combination = new HashSet<int>();
 
-            while (combination.Count < 5)
+            while (combination.Count < 6)
             {
                 int number = pool[_random.Next(pool.Count)];
                 combination.Add(number);

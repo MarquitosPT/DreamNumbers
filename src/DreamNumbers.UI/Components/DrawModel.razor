@@ -1,0 +1,84 @@
+@inject IDrawStorage DrawRepository
+
+<div class="modal fade @(visible ? "show d-block" : "")" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Adicionar Sorteio</h5>
+                <button type="button" class="btn-close" @onclick="Hide"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label>Data:</label>
+                    <input type="date" class="form-control" @bind="date" />
+                </div>
+                <div class="mb-3">
+                    <label>Números (separados por vírgula):</label>
+                    <input type="text" class="form-control" @bind="numbersInput" />
+                </div>
+                <div class="mb-3">
+                    <label>Dream Number (1 a 5):</label>
+                    <input type="number" class="form-control" @bind="dreamNumber" min="1" max="5" />
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" @onclick="Hide">Cancelar</button>
+                <button class="btn btn-primary" @onclick="Save">Guardar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool visible = false;
+    private DateTime date = DateTime.Today;
+    private string numbersInput = "";
+    private int dreamNumber = 1;
+
+
+    [Parameter] public EventCallback OnDrawAdded { get; set; }
+
+    public void Show()
+    {
+        date = DateTime.Today;
+        numbersInput = "";
+        visible = true;
+
+        StateHasChanged();
+    }
+
+    private void Hide()
+    {
+        visible = false;
+
+        StateHasChanged();
+    }
+
+    private async Task Save()
+    {
+        var numbers = numbersInput
+        .Split(',', StringSplitOptions.RemoveEmptyEntries)
+        .Select(n => int.TryParse(n.Trim(), out var num) ? num : -1)
+        .Where(n => n > 0 && n <= 50)
+        .Distinct()
+        .ToList();
+
+        if (numbers.Count != 6)
+            return; // TODO: mostrar erro
+
+        if (dreamNumber < 1 || dreamNumber > 5)
+            return; // TODO: mostrar erro
+
+        var draw = new Draw
+        {
+            Date = date,
+            Numbers = numbers,
+            DreamNumber = dreamNumber
+        };
+
+        await DrawRepository.AddOrUpdateAsync(draw);
+        await OnDrawAdded.InvokeAsync();
+
+        Hide();
+    }
+}

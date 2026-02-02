@@ -1,9 +1,6 @@
 <Solution>
   <Folder Name="/Application/" />
   <Folder Name="/Application/Platforms/">
-    <Project Path="src/DreamNumbers.App/DreamNumbers.App.csproj">
-      <Deploy Solution="Debug|*" />
-    </Project>
     <Project Path="src/DreamNumbers.Web/DreamNumbers.Web.csproj" />
   </Folder>
   <Folder Name="/Application/UI/">

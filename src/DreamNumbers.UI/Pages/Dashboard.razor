@@ -15,7 +15,7 @@
     </select>
 </div>
 
-@if (stats == null)
+@if (isLoading)
 {
     <p>Loading statistics...</p>
 }
@@ -23,34 +23,46 @@ else
 {
     <div class="row">
         <div class="col-md-6">
-            <h4>Absence Chart</h4>
-            <canvas id="absenceChart"></canvas>
+            <h4>Number Frequency</h4>
+            <canvas id="frequencyChart"></canvas>
         </div>
 
         <div class="col-md-6">
-            <h4>Frequency Chart</h4>
-            <canvas id="frequencyChart"></canvas>
+            <h4>Number Absence</h4>
+            <canvas id="absenceChart"></canvas>
         </div>
     </div>
 
-    <h4>Top 5 Most Probable Numbers</h4>
+    <div class="row">
+        <div class="col-md-6">
+            <h4>Dream Number Frequency</h4>
+            <canvas id="frequencyDreamNumbersChart"></canvas>
+        </div>
+
+        <div class="col-md-6">
+            <h4>Dream Number Absence</h4>
+            <canvas id="absenceDreamNumbersChart"></canvas>
+        </div>
+    </div>
+
+    <h4>Top 6 Most Probable Numbers</h4>
 
     <ul>
-        @foreach (var n in stats.OrderByDescending(s => s.EstimatedProbability).Take(5))
+        @foreach (var n in stats.OrderByDescending(s => s.EstimatedProbability).Take(6))
         {
             <li>Number @n.Number — @n.EstimatedProbability.ToString("P2")</li>
         }
     </ul>
 
-    <h4 class="mt-4">Statistics Table</h4>
+    <h4 class="mt-4">Number Statistics</h4>
     <table class="table table-striped">
         <thead>
             <tr>
                 <th>Number</th>
-                <th>Absence</th>
                 <th>Freq 20</th>
                 <th>Freq 40</th>
                 <th>Freq 60</th>
+                <th>Absence</th>
                 <th>Probability</th>
             </tr>
         </thead>
@@ -59,21 +71,53 @@ else
             {
                 <tr class="@(s.CurrentAbsence >= 10 ? "high-absence" : "")">
                     <td>@s.Number</td>
-                    <td>@s.CurrentAbsence</td>
                     <td>@s.Frequency20</td>
                     <td>@s.Frequency40</td>
                     <td>@s.Frequency60</td>
+                    <td>@s.CurrentAbsence</td>
                     <td>@s.EstimatedProbability.ToString("P2")</td>
                 </tr>
             }
         </tbody>
     </table>
+
+    <h3>Dream Number Statistics</h3>
+    <table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Number</th>
+                <th>Freq 20</th>
+                <th>Freq 40</th>
+                <th>Freq 60</th>
+                <th>Absence</th>
+                <th>Probability</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var stat in dreamStats)
+        {
+            <tr class="@(stat.CurrentAbsence >= 10 ? "high-absence" : "")">
+                <td>@stat.Number</td>
+                <td>@stat.Frequency20</td>
+                <td>@stat.Frequency40</td>
+                <td>@stat.Frequency60</td>
+                <td>@stat.CurrentAbsence</td>
+                <td>@stat.EstimatedProbability.ToString("P2")</td>
+            </tr>
+        }
+    </tbody>
+</table>
 }
 
 @code {
-    private List<NumberStatistics> stats;
+    private bool isLoading = true;
+    private bool renderChartsNeeded = false;
+    private List<Draw> allDraws = new();
+    private List<NumberStatistics> stats = new();
+    private List<DreamNumberStatistics> dreamStats = new();
     private int selectedInterval = 60;
-    private List<Draw> allDraws;
+    
+    
 
     protected override async Task OnInitializedAsync()
     {
@@ -81,11 +125,25 @@ else
         LoadStatistics();
     }
 
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (renderChartsNeeded)
+        {
+            renderChartsNeeded = false;
+            RenderCharts();
+            RenderDreamNumbersCharts();
+        }
+    }
+
     private void LoadStatistics()
     {
         stats = StatisticsService.CalculateStatistics(allDraws);
+        dreamStats = StatisticsService.CalculateDreamNumberStatistics(allDraws);
+
+        renderChartsNeeded = true;
+        isLoading = false;
+
         InvokeAsync(StateHasChanged);
-        RenderCharts();
     }
 
     private void RenderCharts()
@@ -99,5 +157,18 @@ else
         var labels = stats.Select(s => s.Number).ToArray();
 
         JS.InvokeVoidAsync("renderDashboardCharts", labels, absenceData, frequencyData);
+    }
+
+    private void RenderDreamNumbersCharts()
+    {
+        var absenceData = dreamStats.Select(s => s.CurrentAbsence).ToArray();
+        var frequencyData = dreamStats.Select(s =>
+            selectedInterval == 20 ? s.Frequency20 :
+            selectedInterval == 40 ? s.Frequency40 :
+                                     s.Frequency60).ToArray();
+
+        var labels = dreamStats.Select(s => s.Number).ToArray();
+
+        JS.InvokeVoidAsync("renderDreamNumbersCharts", labels, absenceData, frequencyData);
     }
 }

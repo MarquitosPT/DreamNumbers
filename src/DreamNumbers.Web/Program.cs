@@ -1,8 +1,10 @@
 using DreamNumbers.Extensions.Configuration;
+using DreamNumbers.Storages.EFCore.SQLite.DbContexts;
 using DreamNumbers.Storages.EFCore.SQLite.Extensions.Configuration;
 using DreamNumbers.UI.Services;
 using DreamNumbers.Web.Components;
 using DreamNumbers.Web.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace DreamNumbers
 {
@@ -17,7 +19,7 @@ namespace DreamNumbers
                 .AddInteractiveServerComponents();
 
             builder.Services.AddDreamNumbersCore();
-            builder.Services.AddDreamNumbersStorage("Data Source=data\\dreamnumbers.db");
+            builder.Services.AddDreamNumbersStorage("Data Source=dreamnumbers.db");
 
             // Add device-specific services used by the DreamNumbers.Shared project
             builder.Services.AddSingleton<IFormFactor, FormFactor>();
@@ -42,6 +44,13 @@ namespace DreamNumbers
                 .AddInteractiveServerRenderMode()
                 .AddAdditionalAssemblies(
                     typeof(DreamNumbers.UI._Imports).Assembly);
+
+            using (var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var context = scope.ServiceProvider.GetRequiredService<DreamNumbersDbContext>();
+
+                context.Database.Migrate();
+            }
 
             app.Run();
         }
