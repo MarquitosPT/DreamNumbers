@@ -7,6 +7,7 @@ namespace DreamNumbers.Services
         SimulationResult Generate(
             SimulationRequest request,
             List<NumberStatistics> stats,
+            List<DreamNumberStatistics> dreamStats,
             ISimulationStrategy strategy);
     }
 

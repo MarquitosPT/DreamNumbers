@@ -11,5 +11,10 @@ namespace DreamNumbers.SimulationStrategies
         {
             return s.CurrentAbsence;
         }
+
+        public double GetWeight(DreamNumberStatistics s)
+        {
+            return s.CurrentAbsence;
+        }
     }
 }

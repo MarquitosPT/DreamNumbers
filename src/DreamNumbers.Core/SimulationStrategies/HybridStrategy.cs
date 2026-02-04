@@ -16,5 +16,15 @@ namespace DreamNumbers.SimulationStrategies
 
             return (absence * 0.6) + (frequency * 0.4);
         }
+
+        public double GetWeight(DreamNumberStatistics s)
+        {
+            double absence = s.CurrentAbsence;
+            double frequency = s.Frequency20 * 0.5 +
+                               s.Frequency40 * 0.3 +
+                               s.Frequency60 * 0.2;
+
+            return (absence * 0.6) + (frequency * 0.4);
+        }
     }
 }

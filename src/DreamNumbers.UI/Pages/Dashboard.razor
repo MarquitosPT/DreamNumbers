@@ -8,7 +8,7 @@
 
 <div class="mb-3">
     <label>Select Interval:</label>
-    <select class="form-select w-auto" @bind="selectedInterval">
+    <select class="form-select w-auto" @bind="selectedInterval" @oninput="OnIntervalChanged">
         <option value="20">Last 20 Draws</option>
         <option value="40">Last 40 Draws</option>
         <option value="60">Last 60 Draws</option>
@@ -21,38 +21,41 @@
 }
 else
 {
-    <div class="row">
+    <div class="row mb-3">
         <div class="col-md-6">
-            <h4>Number Frequency</h4>
-            <canvas id="frequencyChart"></canvas>
+            <h4>Numbers</h4>
+            <canvas id="numbersChart"></canvas>
         </div>
 
         <div class="col-md-6">
-            <h4>Number Absence</h4>
-            <canvas id="absenceChart"></canvas>
-        </div>
-    </div>
-
-    <div class="row">
-        <div class="col-md-6">
-            <h4>Dream Number Frequency</h4>
-            <canvas id="frequencyDreamNumbersChart"></canvas>
-        </div>
-
-        <div class="col-md-6">
-            <h4>Dream Number Absence</h4>
-            <canvas id="absenceDreamNumbersChart"></canvas>
+            <h4>Dream Numbers</h4>
+            <canvas id="dreamNumbersChart"></canvas>
         </div>
     </div>
 
-    <h4>Top 6 Most Probable Numbers</h4>
+    <div class="row mb-3">
+        <div class="col-md-6">
+            <h4>Top 6 Most Probable Numbers</h4>
+            <ul>
+                @foreach (var n in stats.OrderByDescending(s => s.EstimatedProbability).Take(6))
+                {
+                    <li>Number @n.Number — @n.EstimatedProbability.ToString("P2")</li>
+                }
+            </ul>
+        </div>
 
-    <ul>
-        @foreach (var n in stats.OrderByDescending(s => s.EstimatedProbability).Take(6))
-        {
-            <li>Number @n.Number — @n.EstimatedProbability.ToString("P2")</li>
-        }
-    </ul>
+        <div class="col-md-6">
+            <h4>Top 3 Most Probable Dream Numbers</h4>
+            <ul>
+                @foreach (var n in dreamStats.OrderByDescending(s => s.EstimatedProbability).Take(3))
+                {
+                    <li>Number @n.Number — @n.EstimatedProbability.ToString("P2")</li>
+                }
+            </ul>
+        </div>
+    </div>
+
+    
 
     <h4 class="mt-4">Number Statistics</h4>
     <table class="table table-striped">
@@ -116,8 +119,6 @@ else
     private List<NumberStatistics> stats = new();
     private List<DreamNumberStatistics> dreamStats = new();
     private int selectedInterval = 60;
-    
-    
 
     protected override async Task OnInitializedAsync()
     {
@@ -130,8 +131,8 @@ else
         if (renderChartsNeeded)
         {
             renderChartsNeeded = false;
-            RenderCharts();
-            RenderDreamNumbersCharts();
+            RenderNumbersChart();
+            RenderDreamNumbersChart();
         }
     }
 
@@ -146,7 +147,14 @@ else
         InvokeAsync(StateHasChanged);
     }
 
-    private void RenderCharts()
+    private void OnIntervalChanged(ChangeEventArgs e)
+    {
+        renderChartsNeeded = true;
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void RenderNumbersChart()
     {
         var absenceData = stats.Select(s => s.CurrentAbsence).ToArray();
         var frequencyData = stats.Select(s =>
@@ -156,10 +164,10 @@ else
 
         var labels = stats.Select(s => s.Number).ToArray();
 
-        JS.InvokeVoidAsync("renderDashboardCharts", labels, absenceData, frequencyData);
+        JS.InvokeVoidAsync("renderNumbersChart", labels, absenceData, frequencyData);
     }
 
-    private void RenderDreamNumbersCharts()
+    private void RenderDreamNumbersChart()
     {
         var absenceData = dreamStats.Select(s => s.CurrentAbsence).ToArray();
         var frequencyData = dreamStats.Select(s =>
@@ -169,6 +177,6 @@ else
 
         var labels = dreamStats.Select(s => s.Number).ToArray();
 
-        JS.InvokeVoidAsync("renderDreamNumbersCharts", labels, absenceData, frequencyData);
+        JS.InvokeVoidAsync("renderDreamNumbersChart", labels, absenceData, frequencyData);
     }
 }

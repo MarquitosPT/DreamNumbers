@@ -1,20 +1,27 @@
-window.renderDashboardCharts = (labels, absenceData, frequencyData) => {
+window.dreamNumbersCharts = {
+    charts: {},
 
-    // Absence Chart
-    new Chart(document.getElementById("absenceChart"), {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [{
-                label: 'Absence',
-                data: absenceData,
-                backgroundColor: 'rgba(255, 99, 132, 0.6)'
-            }]
+    renderChart: function (canvasId, chartData) {
+        const ctx = document.getElementById(canvasId);
+
+        // Se já existe um gráfico neste canvas, destrói-o
+        if (this.charts[canvasId]) {
+            this.charts[canvasId].destroy();
         }
-    });
 
-    // Frequency Chart
-    new Chart(document.getElementById("frequencyChart"), {
+        // Cria novo gráfico
+        this.charts[canvasId] = new Chart(ctx, {
+            type: chartData.type,
+            data: chartData.data,
+            options: chartData.options
+        });
+    }
+};
+
+
+window.renderNumbersChart = (labels, absenceData, frequencyData) => {
+
+    dreamNumbersCharts.renderChart("numbersChart", {
         type: 'bar',
         data: {
             labels: labels,
@@ -22,30 +29,19 @@ window.renderDashboardCharts = (labels, absenceData, frequencyData) => {
                 label: 'Frequency',
                 data: frequencyData,
                 backgroundColor: 'rgba(54, 162, 235, 0.6)'
+            },
+            {
+                label: 'Absence',
+                data: absenceData,
+                backgroundColor: 'rgba(255, 99, 132, 0.6)'
             }]
         }
     });
 };
 
-window.renderDreamNumbersCharts = (labels, absenceData, frequencyData) => {
+window.renderDreamNumbersChart = (labels, absenceData, frequencyData) => {
 
-    // Absence Chart
-    new Chart(document.getElementById("absenceDreamNumbersChart"), {
-        type: 'bar',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Absence',
-                    data: absenceData,
-                    backgroundColor: 'rgba(255, 99, 132, 0.6)'
-                }
-            ]
-        }
-    });
-
-    // Frequency Chart
-    new Chart(document.getElementById("frequencyDreamNumbersChart"), {
+    dreamNumbersCharts.renderChart("dreamNumbersChart", {
         type: 'bar',
         data: {
             labels: labels,
@@ -54,6 +50,11 @@ window.renderDreamNumbersCharts = (labels, absenceData, frequencyData) => {
                     label: 'Frequency',
                     data: frequencyData,
                     backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                },
+                {
+                    label: 'Absence',
+                    data: absenceData,
+                    backgroundColor: 'rgba(255, 99, 132, 0.6)'
                 }
             ]
         }

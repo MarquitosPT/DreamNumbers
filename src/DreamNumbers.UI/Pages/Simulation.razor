@@ -18,10 +18,10 @@
 
 <div class="mb-3">
     <label>Number of combinations:</label>
-    <input type="number" class="form-control w-auto" @bind="count" min="1" max="100" />
+    <input type="number" class="form-control w-auto" @bind="count" min="1" max="10" />
 </div>
 
-<select class="form-select w-auto" @bind="selectedStrategyName">
+<select class="form-select w-auto mb-3" @bind="selectedStrategyName">
     @foreach (var s in strategies)
     {
         <option value="@s.Name">@s.Name</option>
@@ -37,18 +37,18 @@
     <ul>
         @foreach (var combo in results.Combinations)
         {
-            <li>@string.Join(", ", combo)</li>
+            <li>@string.Join(", ", combo.Item1) + @combo.Item2</li>
         }
     </ul>
 }
 
 @code {
     private int interval = 60;
-    private int count = 10;
-    private SimulationResult results;
+    private int count = 5;
+    private SimulationResult? results;
 
-    private IEnumerable<ISimulationStrategy> strategies;
-    private string selectedStrategyName;
+    private IEnumerable<ISimulationStrategy> strategies = default!;
+    private string? selectedStrategyName;
 
     protected override async Task OnInitializedAsync()
     {
@@ -60,6 +60,7 @@
     {
         var draws = await DrawRepository.GetAllAsync();
         var stats = StatisticsService.CalculateStatistics(draws);
+        var dreamStats = StatisticsService.CalculateDreamNumberStatistics(draws);
 
         var strategy = strategies.First(s => s.Name == selectedStrategyName);
 
@@ -69,7 +70,7 @@
             NumberOfCombinations = count
         };
 
-        results = SimulationEngine.Generate(request, stats, strategy);
+        results = SimulationEngine.Generate(request, stats, dreamStats, strategy);
     }
 }
 

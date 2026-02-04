@@ -17,9 +17,8 @@ namespace DreamNumbers.Storages.EFCore.SQLite.Migrations
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    Number = table.Column<int>(type: "INTEGER", nullable: false),
-                    Year = table.Column<int>(type: "INTEGER", nullable: false),
                     Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    DrawNumber = table.Column<string>(type: "TEXT", maxLength: 16, nullable: false),
                     Numbers = table.Column<string>(type: "TEXT", nullable: false),
                     DreamNumber = table.Column<int>(type: "INTEGER", nullable: false)
                 },

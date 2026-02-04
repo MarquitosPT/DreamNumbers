@@ -13,5 +13,12 @@ namespace DreamNumbers.SimulationStrategies
                    s.Frequency40 * 0.3 +
                    s.Frequency60 * 0.2;
         }
+
+        public double GetWeight(DreamNumberStatistics s)
+        {
+            return s.Frequency20 * 0.5 +
+                   s.Frequency40 * 0.3 +
+                   s.Frequency60 * 0.2;
+        }
     }
 }

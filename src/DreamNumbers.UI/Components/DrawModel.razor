@@ -13,6 +13,10 @@
                     <input type="date" class="form-control" @bind="date" />
                 </div>
                 <div class="mb-3">
+                    <label>Sorteio:</label>
+                    <input type="text" class="form-control" @bind="drawNumber" />
+                </div>
+                <div class="mb-3">
                     <label>Números (separados por vírgula):</label>
                     <input type="text" class="form-control" @bind="numbersInput" />
                 </div>
@@ -32,6 +36,7 @@
 @code {
     private bool visible = false;
     private DateTime date = DateTime.Today;
+    private string drawNumber = "";
     private string numbersInput = "";
     private int dreamNumber = 1;
 
@@ -41,6 +46,7 @@
     public void Show()
     {
         date = DateTime.Today;
+        drawNumber = "";
         numbersInput = "";
         visible = true;
 
@@ -72,6 +78,7 @@
         var draw = new Draw
         {
             Date = date,
+            DrawNumber = drawNumber,
             Numbers = numbers,
             DreamNumber = dreamNumber
         };

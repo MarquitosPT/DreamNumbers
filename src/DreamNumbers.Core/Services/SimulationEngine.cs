@@ -9,6 +9,7 @@ namespace DreamNumbers.Services
         public SimulationResult Generate(
             SimulationRequest request,
             List<NumberStatistics> stats,
+            List<DreamNumberStatistics> dreamStats,
             ISimulationStrategy strategy)
         {
             var result = new SimulationResult();
@@ -16,7 +17,9 @@ namespace DreamNumbers.Services
             for (int i = 0; i < request.NumberOfCombinations; i++)
             {
                 var combination = GenerateSingleCombination(stats, strategy);
-                result.Combinations.Add(combination);
+                var dreamCombination = GenerateSingleCombination(dreamStats, strategy);
+
+                result.Combinations.Add((combination, dreamCombination));
             }
 
             return result;
@@ -38,8 +41,38 @@ namespace DreamNumbers.Services
             return combination.OrderBy(n => n).ToList();
         }
 
-        private List<int> BuildWeightedPool(
+        private int GenerateSingleCombination(
+            List<DreamNumberStatistics> stats,
+            ISimulationStrategy strategy)
+        {
+            var pool = BuildWeightedPool(stats, strategy);
+
+            int number = pool[_random.Next(pool.Count)];
+
+            return number;
+        }
+
+        private static List<int> BuildWeightedPool(
             List<NumberStatistics> stats,
+            ISimulationStrategy strategy)
+        {
+            var pool = new List<int>();
+
+            foreach (var s in stats)
+            {
+                double weight = strategy.GetWeight(s);
+
+                int count = (int)Math.Max(1, weight);
+
+                for (int i = 0; i < count; i++)
+                    pool.Add(s.Number);
+            }
+
+            return pool;
+        }
+
+        private static List<int> BuildWeightedPool(
+            List<DreamNumberStatistics> stats,
             ISimulationStrategy strategy)
         {
             var pool = new List<int>();

@@ -2,7 +2,7 @@ namespace DreamNumbers.Models
 {
     public class SimulationResult
     {
-        public List<List<int>> Combinations { get; set; } = new();
+        public List<(List<int>, int)> Combinations { get; set; } = [];
     }
 
 }

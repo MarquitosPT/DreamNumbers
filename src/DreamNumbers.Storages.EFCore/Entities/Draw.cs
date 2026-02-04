@@ -4,12 +4,11 @@ namespace DreamNumbers.Storages.EFCore.Entities
     {
         public int Id { get; set; }
 
-        public int Number { get; set; }
-
-        public int Year { get; set; }
-
         public DateTime Date { get; set; }
-        public List<int> Numbers { get; set; } = new();
+
+        public string DrawNumber { get; set; } = string.Empty;
+
+        public List<int> Numbers { get; set; } = [];
 
         public int DreamNumber { get; set; }
     }

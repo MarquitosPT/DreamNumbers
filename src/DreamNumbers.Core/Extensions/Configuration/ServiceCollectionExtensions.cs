@@ -1,5 +1,6 @@
 using DreamNumbers.ScheduledTasks;
 using DreamNumbers.Services;
+using DreamNumbers.Services.EUDreams.Extensions.Configuration;
 using DreamNumbers.SimulationStrategies;
 using Marquitos.Schedulers;
 using Marquitos.Schedulers.Extensions.Configuration;
@@ -11,9 +12,7 @@ namespace DreamNumbers.Extensions.Configuration
     {
         public static IServiceCollection AddDreamNumbersCore(this IServiceCollection services)
         {
-            // Register core services here in the future.
-            services.AddHttpClient();
-
+            
             // Scheduler
             services.AddSchedulerService();
             services.AddScheduledTask<DrawUpdateTask>(o =>
@@ -32,6 +31,8 @@ namespace DreamNumbers.Extensions.Configuration
             services.AddSingleton<ISimulationStrategy, FrequencyStrategy>();
             services.AddSingleton<ISimulationStrategy, HybridStrategy>();
             services.AddSingleton<ISimulationStrategy, ExponentialAbsenceStrategy>();
+
+            services.AddEUDreamsService();
 
             return services;
         }

@@ -1,26 +1,73 @@
 using DreamNumbers.Models;
+using DreamNumbers.Services.EUDreams.Services;
 using DreamNumbers.Storages;
 
 namespace DreamNumbers.Services
 {
-    internal class DrawUpdateService(IDrawStorage drawStorage, IHttpClientFactory httpClientFactory) : IDrawUpdateService
+    public class DrawUpdateService : IDrawUpdateService
     {
+        private readonly EuroDreamsScraper _scraper;
+        private readonly IDrawStorage _storage;
+
+        public DrawUpdateService(EuroDreamsScraper scraper, IDrawStorage storage)
+        {
+            _scraper = scraper;
+            _storage = storage;
+        }
+
         public async Task UpdateDrawsAsync()
         {
-            var client = httpClientFactory.CreateClient();
-            var html = await client.GetStringAsync("https://example.com/draws");
+            var lastDraw = await _storage.GetLastDrawAsync();
 
-            var parsedDraws = ParseDraws(html);
+            DateTime startDate;
+            int drawIndex;
 
-            foreach (var draw in parsedDraws)
-                await drawStorage.AddOrUpdateAsync(draw);
+            if (lastDraw == null)
+            {
+                startDate = new DateTime(2023, 11, 06);
+                drawIndex = 0;
+            }
+            else
+            {
+                startDate = lastDraw.Date.AddDays(1);
+                drawIndex = ExtractDrawIndex(lastDraw.DrawNumber);
+            }
+
+            DateTime today = DateTime.Today;
+
+            for (var date = startDate; date <= today; date = date.AddDays(1))
+            {
+                if (date.Year != startDate.Year)
+                    drawIndex = 0;
+
+                if ((date.DayOfWeek != DayOfWeek.Monday) && (date.DayOfWeek != DayOfWeek.Thursday))
+                    continue;
+
+                var result = await _scraper.GetResultAsync(date, drawIndex + 1);
+
+                if (result == null)
+                    continue;
+
+                drawIndex++;
+
+                var draw = new Draw
+                {
+                    Date = result.Date,
+                    DrawNumber = result.DrawNumber,
+                    Numbers = result.Numbers,
+                    DreamNumber = result.DreamNumber
+                };
+
+                await _storage.InsertAsync(draw);
+
+                startDate = result.Date;
+            }
         }
 
-        private List<Draw> ParseDraws(string html)
+        private int ExtractDrawIndex(string drawNumber)
         {
-            // TODO: implement parsing
-            return new List<Draw>();
+            var parts = drawNumber.Split('/');
+            return int.Parse(parts[0]);
         }
     }
-
 }

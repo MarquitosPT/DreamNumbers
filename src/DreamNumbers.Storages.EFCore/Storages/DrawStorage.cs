@@ -1,5 +1,6 @@
 using DreamNumbers.Models;
 using DreamNumbers.Storages.EFCore.DbContexts;
+using DreamNumbers.Storages.EFCore.Mappers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -34,21 +35,13 @@ namespace DreamNumbers.Storages.EFCore.Storages
             var existingDraw = await Context.Draws.FindAsync(draw.Id);
             if (existingDraw == null)
             {
-                var entity = new Entities.Draw
-                {
-                    Id = draw.Id,
-                    Date = draw.Date,
-                    Number = draw.Number,
-                    Year = draw.Year,
-                    Numbers = draw.Numbers,
-                    DreamNumber = draw.DreamNumber
-                };
+                var entity = DrawMapper.ToEntity(draw);
 
                 await Context.Draws.AddAsync(entity);
 
                 if (Logger.IsEnabled(LogLevel.Information))
                 {
-                    Logger.LogInformation("Added new draw with ID {DrawId}.", draw.Id);
+                    Logger.LogInformation("Added new draw '{DrawNumber}' with ID {Id}.", entity.DrawNumber, entity.Id);
                 }
             }
             else
@@ -57,7 +50,7 @@ namespace DreamNumbers.Storages.EFCore.Storages
 
                 if (Logger.IsEnabled(LogLevel.Information))
                 {
-                    Logger.LogInformation("Updated existing draw with ID {DrawId}.", draw.Id);
+                    Logger.LogInformation("Updated existing draw '{DrawNumber}' with ID {Id}.", draw.DrawNumber, draw.Id);
                 }
             }
             await Context.SaveChangesAsync();
@@ -67,15 +60,44 @@ namespace DreamNumbers.Storages.EFCore.Storages
         {
             var result = await Context.Draws.AsNoTracking().ToListAsync();
 
-            return result.Select(e => new Draw
-            {
-                Id = e.Id,
-                Date = e.Date,
-                Number = e.Number,
-                Year = e.Year,
-                Numbers = e.Numbers,
-                DreamNumber = e.DreamNumber
-            }).ToList();
+            return [.. result.Select(e => DrawMapper.ToModel(e))];
         }
+
+        public async Task<Draw?> GetLastDrawAsync()
+        {
+            var entity = await Context.Draws
+                .OrderByDescending(d => d.Date)
+                .FirstOrDefaultAsync();
+
+            return entity == null ? null : DrawMapper.ToModel(entity);
+        }
+
+        public async Task<DateTime?> GetLastDrawDateAsync()
+        {
+            return await Context.Draws
+                .OrderByDescending(d => d.Date)
+                .Select(d => (DateTime?)d.Date)
+                .FirstOrDefaultAsync();
+        }
+
+        public async Task InsertAsync(Draw draw)
+        {
+            var entity = DrawMapper.ToEntity(draw);
+            Context.Draws.Add(entity);
+            await Context.SaveChangesAsync();
+
+            if (Logger.IsEnabled(LogLevel.Information))
+            {
+                Logger.LogInformation("Added new draw '{DrawNumber}' with ID {Id}.", entity.DrawNumber, entity.Id);
+            }
+        }
+
+        public async Task InsertManyAsync(IEnumerable<Draw> draws)
+        {
+            var entities = draws.Select(DrawMapper.ToEntity);
+            Context.Draws.AddRange(entities);
+            await Context.SaveChangesAsync();
+        }
+
     }
 }

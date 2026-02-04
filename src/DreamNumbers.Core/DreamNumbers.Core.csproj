@@ -19,6 +19,7 @@
     <ItemGroup>
       <ProjectReference Include="..\DreamNumbers.Abstractions\DreamNumbers.Abstractions.csproj" />
       <ProjectReference Include="..\DreamNumbers.Services.Abstractions\DreamNumbers.Services.Abstractions.csproj" />
+      <ProjectReference Include="..\DreamNumbers.Services.EUDreams\DreamNumbers.Services.EUDreams.csproj" />
       <ProjectReference Include="..\DreamNumbers.Storages.Abstractions\DreamNumbers.Storages.Abstractions.csproj" />
     </ItemGroup>
 

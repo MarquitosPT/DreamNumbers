@@ -11,5 +11,10 @@ namespace DreamNumbers.SimulationStrategies
         {
             return Math.Pow(1.15, s.CurrentAbsence);
         }
+
+        public double GetWeight(DreamNumberStatistics s)
+        {
+            return Math.Pow(1.15, s.CurrentAbsence);
+        }
     }
 }

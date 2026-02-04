@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\DreamNumbers.Core\DreamNumbers.Core.csproj" />
-    <ProjectReference Include="..\DreamNumbers.Services.JSC\DreamNumbers.Services.JSC.csproj" />
     <ProjectReference Include="..\DreamNumbers.Storages.EFCore.SQLite\DreamNumbers.Storages.EFCore.SQLite.csproj" />
     <ProjectReference Include="..\DreamNumbers.UI\DreamNumbers.UI.csproj" />
   </ItemGroup>

@@ -11,6 +11,12 @@ namespace DreamNumbers.Storages.EFCore.DbContexts.Configurations
             builder.ToTable("Draws");
 
             builder.HasKey(d => d.Id);
+
+            builder.Property(e => e.Date).IsRequired();
+            builder.Property(e => e.DrawNumber).HasMaxLength(16).IsRequired();
+            builder.Property(e => e.Numbers).IsRequired();
+            builder.Property(e => e.DreamNumber).IsRequired();
+
         }
     }
 }

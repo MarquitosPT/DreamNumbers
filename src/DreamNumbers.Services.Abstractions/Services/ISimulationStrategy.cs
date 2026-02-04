@@ -6,6 +6,8 @@ namespace DreamNumbers.Services
     {
         string Name { get; }
         double GetWeight(NumberStatistics stats);
+
+        double GetWeight(DreamNumberStatistics stats);
     }
 
 }

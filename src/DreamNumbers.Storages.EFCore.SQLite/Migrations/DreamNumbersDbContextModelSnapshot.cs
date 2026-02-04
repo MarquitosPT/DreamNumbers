@@ -26,18 +26,17 @@ namespace DreamNumbers.Storages.EFCore.SQLite.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("DreamNumber")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("DrawNumber")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT");
 
-                    b.Property<int>("Number")
+                    b.Property<int>("DreamNumber")
                         .HasColumnType("INTEGER");
 
                     b.PrimitiveCollection<string>("Numbers")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("Year")
-                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
