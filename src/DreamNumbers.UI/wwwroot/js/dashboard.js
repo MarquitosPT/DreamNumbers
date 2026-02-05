@@ -26,12 +26,12 @@ window.renderNumbersChart = (labels, absenceData, frequencyData) => {
         data: {
             labels: labels,
             datasets: [{
-                label: 'Frequency',
+                label: 'Frequência',
                 data: frequencyData,
                 backgroundColor: 'rgba(54, 162, 235, 0.6)'
             },
             {
-                label: 'Absence',
+                label: 'Ausência',
                 data: absenceData,
                 backgroundColor: 'rgba(255, 99, 132, 0.6)'
             }]
@@ -47,12 +47,12 @@ window.renderDreamNumbersChart = (labels, absenceData, frequencyData) => {
             labels: labels,
             datasets: [
                 {
-                    label: 'Frequency',
+                    label: 'Frequência',
                     data: frequencyData,
                     backgroundColor: 'rgba(54, 162, 235, 0.6)'
                 },
                 {
-                    label: 'Absence',
+                    label: 'Ausência',
                     data: absenceData,
                     backgroundColor: 'rgba(255, 99, 132, 0.6)'
                 }

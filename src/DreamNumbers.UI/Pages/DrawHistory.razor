@@ -5,27 +5,27 @@
 <h2>Draw History</h2>
 
 <div class="mb-3">
-    <label>Filter Interval:</label>
+    <label>Intervalo:</label>
     <select class="form-select w-auto" @bind="selectedInterval" @oninput="OnIntervalChanged">
-        <option value="20">Last 20</option>
-        <option value="40">Last 40</option>
-        <option value="60">Last 60</option>
+        <option value="20">Últimos 20</option>
+        <option value="40">Últimos 40</option>
+        <option value="60">Últimos 60</option>
     </select>
 </div>
 
 @if (filteredDraws == null)
 {
-    <p>Loading draws...</p>
+    <p>Carregando sorteios...</p>
 }
 else
 {
     <table class="table table-striped">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Number</th>
-                <th>Numbers</th>
-                <th>Dream</th>
+                <th>Data</th>
+                <th>Sorteio</th>
+                <th>Números</th>
+                <th>Nº Sonho</th>
             </tr>
         </thead>
         <tbody>
@@ -43,8 +43,8 @@ else
 }
 
 @code {
-    private List<Draw> allDraws;
-    private List<Draw> filteredDraws;
+    private List<Draw>? allDraws;
+    private List<Draw>? filteredDraws;
     private int selectedInterval = 20;
 
     protected override async Task OnInitializedAsync()
@@ -56,13 +56,13 @@ else
     {
         if (selectedInterval == 0)
         {
-            filteredDraws = allDraws
+            filteredDraws = allDraws?
                 .OrderByDescending(d => d.Date)
                 .ToList();
         }
         else
         {
-            filteredDraws = allDraws
+            filteredDraws = allDraws?
                 .OrderByDescending(d => d.Date)
                 .Take(selectedInterval)
                 .ToList();
@@ -71,7 +71,7 @@ else
 
     private void OnIntervalChanged(ChangeEventArgs e)
     {
-        selectedInterval = int.Parse(e.Value.ToString());
+        selectedInterval = int.Parse(e.Value?.ToString() ?? "60");
         ApplyFilter();
     }
 

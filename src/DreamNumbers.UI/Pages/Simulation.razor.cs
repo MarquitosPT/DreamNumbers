@@ -23,8 +23,8 @@ namespace DreamNumbers.UI.Pages
         protected double WeightHazard = 0.33;
         protected double WeightTrend = 0.33;
 
-        protected SimulationResult Result;
-        protected List<string> Logs = new();
+        protected SimulationResult? Result;
+        protected List<string> Logs = [];
         protected int? ExpandedLogIndex = null;
 
         protected async Task RunSimulation()

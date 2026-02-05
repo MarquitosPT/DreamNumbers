@@ -30,11 +30,6 @@ namespace DreamNumbers.Extensions.Configuration
             services.AddSingleton<IScoringStrategyFactory, ScoringStrategyFactory>();
 
             // Strategies
-            //services.AddSingleton<ISimulationStrategy, AbsenceStrategy>();
-            //services.AddSingleton<ISimulationStrategy, FrequencyStrategy>();
-            //services.AddSingleton<ISimulationStrategy, HybridStrategy>();
-            //services.AddSingleton<ISimulationStrategy, ExponentialAbsenceStrategy>();
-
             services.AddSingleton<IScoringStrategy, TrendStrategy>();
             services.AddSingleton<IScoringStrategy, HazardRateStrategy>();
             services.AddSingleton<IScoringStrategy, MedianGapStrategy>();
