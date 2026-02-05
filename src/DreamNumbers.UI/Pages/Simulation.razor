@@ -1,76 +1,144 @@
 @page "/simulation"
 
-@inject IDrawStorage DrawRepository
-@inject IStatisticsService StatisticsService
-@inject ISimulationEngine SimulationEngine
-@inject IEnumerable<ISimulationStrategy> StrategyProvider
+<h3>Simulação de Combinações</h3>
 
-<h2>Simulation Engine</h2>
-
-<div class="mb-3">
-    <label>Interval:</label>
-    <select class="form-select w-auto" @bind="interval">
-        <option value="20">Last 20</option>
-        <option value="40">Last 40</option>
-        <option value="60">Last 60</option>
-    </select>
-</div>
-
-<div class="mb-3">
-    <label>Number of combinations:</label>
-    <input type="number" class="form-control w-auto" @bind="count" min="1" max="10" />
-</div>
-
-<select class="form-select w-auto mb-3" @bind="selectedStrategyName">
-    @foreach (var s in strategies)
+<div class="alert alert-info">
+    @if (SelectedStrategyName == "Composite")
     {
-        <option value="@s.Name">@s.Name</option>
-    }
-</select>
-
-<button class="btn btn-primary" @onclick="RunSimulation">Generate</button>
-
-@if (results != null)
-{
-    <h4 class="mt-4">Generated Combinations</h4>
-
-    <ul>
-        @foreach (var combo in results.Combinations)
+        @if (SelectedProfile == "Conservador")
         {
-            <li>@string.Join(", ", combo.Item1) + @combo.Item2</li>
+            <div><strong>Conservador:</strong> privilegia números estáveis, frequentes e com tendência positiva.</div>
         }
-    </ul>
-}
-
-@code {
-    private int interval = 60;
-    private int count = 5;
-    private SimulationResult? results;
-
-    private IEnumerable<ISimulationStrategy> strategies = default!;
-    private string? selectedStrategyName;
-
-    protected override async Task OnInitializedAsync()
-    {
-        strategies = StrategyProvider.ToList();
-        selectedStrategyName = strategies.First().Name;
-    }
-
-    private async Task RunSimulation()
-    {
-        var draws = await DrawRepository.GetAllAsync();
-        var stats = StatisticsService.CalculateStatistics(draws);
-        var dreamStats = StatisticsService.CalculateDreamNumberStatistics(draws);
-
-        var strategy = strategies.First(s => s.Name == selectedStrategyName);
-
-        var request = new SimulationRequest
+        else if (SelectedProfile == "Equilibrado")
         {
-            Interval = interval,
-            NumberOfCombinations = count
-        };
-
-        results = SimulationEngine.Generate(request, stats, dreamStats, strategy);
+            <div><strong>Equilibrado:</strong> mistura ponderada das três estratégias.</div>
+        }
+        else if (SelectedProfile == "Agressivo")
+        {
+            <div><strong>Agressivo:</strong> favorece números atrasados e com gaps acima da mediana.</div>
+        }
+        else
+        {
+            <div><strong>Personalizado:</strong> ajusta manualmente os pesos das estratégias.</div>
+        }
     }
-}
+    else
+    {
+        <div>Perfis aplicam-se apenas à estratégia <strong>Composite</strong>.</div>
+    }
+    
+</div>
 
+<div class="card p-3 mb-4">
+    <h5>Configuração</h5>
+
+    <div class="row">
+        <div class="col-md-4">
+            <label>Estratégia</label>
+            <select class="form-select" @bind="SelectedStrategyName">
+                <option value="MedianGap">MedianGap</option>
+                <option value="HazardRate">HazardRate</option>
+                <option value="Trend">Trend</option>
+                <option value="Composite">Composite</option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label>Perfil</label>
+            @if (SelectedStrategyName != "Composite")
+            {
+                <select class="form-select" disabled>
+                    <option>N/A</option>
+                </select>
+            }
+            else
+            {
+                <select class="form-select" @bind="SelectedProfile">
+                    <option value="Conservador">Conservador</option>
+                    <option value="Equilibrado">Equilibrado</option>
+                    <option value="Agressivo">Agressivo</option>
+                    <option value="Personalizado">Personalizado</option>
+                </select>
+            }
+        </div>
+
+        <div class="col-md-4">
+            <label>Intervalo</label>
+            <select class="form-select" @bind="Interval">
+                <option value="20">Últimos 20</option>
+                <option value="40">Últimos 40</option>
+                <option value="60">Últimos 60</option>
+            </select>
+        </div>
+    </div>
+
+    @if (SelectedProfile == "Personalizado")
+    {
+        <div class="mt-4">
+            <h6>Ajuste Personalizado</h6>
+
+            <div class="mb-3">
+                <label>Median Gap</label>
+                <input type="range" min="0" max="1.00" step="0.05" @bind="WeightMedianGap" class="form-range" />
+                <span>@WeightMedianGap</span>
+            </div>
+
+            <div class="mb-3">
+                <label>Hazard Rate</label>
+                <input type="range" min="0" max="1.00" step="0.05" @bind="WeightHazard" class="form-range" />
+                <span>@WeightHazard</span>
+            </div>
+
+            <div class="mb-3">
+                <label>Trend</label>
+                <input type="range" min="0" max="1.00" step="0.05" @bind="WeightTrend" class="form-range" />
+                <span>@WeightTrend</span>
+            </div>
+        </div>
+    }
+
+    <div class="mt-3">
+        <label>Nº de Combinações</label>
+        <input type="number" class="form-control" @bind="Combinations" min="1" max="10" />
+    </div>
+
+    <button class="btn btn-primary mt-3" @onclick="RunSimulation">
+        Gerar Simulação
+    </button>
+</div>
+
+@if (Result != null)
+{
+    <h5>Resultados</h5>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Números</th>
+                <th>DreamNumber</th>
+                <th>Logs</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Result.Combinations.Select((c, i) => new { c, i }))
+            {
+                <tr>
+                    <td>@(item.i + 1)</td>
+                    <td>@string.Join(", ", item.c.Numbers)</td>
+                    <td>@item.c.DreamNumber</td>
+                    <td>
+                        <button class="btn btn-sm btn-secondary" @onclick="() => ToggleLog(item.i)">
+                            Ver Logs
+                        </button>
+
+                        @if (ExpandedLogIndex == item.i)
+                        {
+                            <pre class="mt-2 p-2 bg-light border">@Logs[item.i]</pre>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

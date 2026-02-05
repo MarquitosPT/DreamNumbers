@@ -5,10 +5,12 @@ namespace DreamNumbers.Services
     public interface ISimulationEngine
     {
         SimulationResult Generate(
-            SimulationRequest request,
-            List<NumberStatistics> stats,
-            List<DreamNumberStatistics> dreamStats,
-            ISimulationStrategy strategy);
+            int interval,
+            int combinations,
+            IScoringStrategy strategy,
+            List<Draw> draws,
+            List<NumberStatistics> mainStats,
+            List<DreamNumberStatistics> dreamStats);
     }
 
 }
