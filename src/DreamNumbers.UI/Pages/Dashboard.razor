@@ -87,12 +87,24 @@ else
             <table class="table table-striped">
                 <thead>
                     <tr class="text-nowrap">
-                        <th>Número</th>
-                        <th>Freq 20</th>
-                        <th>Freq 40</th>
-                        <th>Freq 60</th>
-                        <th>Ausência</th>
-                        <th>Probabilidade</th>
+                        <th class="w-16" role="button" @onclick="() => SortNumbers(nameof(NumberStatistics.Number))">
+                            Número@(currentSortColumn == nameof(NumberStatistics.Number) ? (sortAscending ? " ▲" : " ▼") : "")
+                        </th>
+                        <th class="w-16" role="button" @onclick="() => SortNumbers(nameof(NumberStatistics.Frequency20))">
+                            Freq 20@(currentSortColumn == nameof(NumberStatistics.Frequency20) ? (sortAscending ? " ▲" : " ▼") : "")
+                        </th>
+                        <th class="w-16" role="button" @onclick="() => SortNumbers(nameof(NumberStatistics.Frequency40))">
+                            Freq 40@(currentSortColumn == nameof(NumberStatistics.Frequency40) ? (sortAscending ? " ▲" : " ▼") : "")
+                        </th>
+                        <th class="w-16" role="button" @onclick="() => SortNumbers(nameof(NumberStatistics.Frequency60))">
+                            Freq 60@(currentSortColumn == nameof(NumberStatistics.Frequency60) ? (sortAscending ? " ▲" : " ▼") : "")
+                        </th>
+                        <th class="w-16" role="button" @onclick="() => SortNumbers(nameof(NumberStatistics.CurrentAbsence))">
+                            Ausência@(currentSortColumn == nameof(NumberStatistics.CurrentAbsence) ? (sortAscending ? " ▲" : " ▼") : "")
+                        </th>
+                        <th class="w-16" role="button" @onclick="() => SortNumbers(nameof(NumberStatistics.EstimatedProbability))">
+                            Probabilidade@(currentSortColumn == nameof(NumberStatistics.EstimatedProbability) ? (sortAscending ? " ▲" : " ▼") : "")
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -116,12 +128,24 @@ else
             <table class="table table-striped">
                 <thead>
                     <tr class="text-nowrap">
-                        <th>Número</th>
-                        <th>Freq 20</th>
-                        <th>Freq 40</th>
-                        <th>Freq 60</th>
-                        <th>Ausência</th>
-                        <th>Probabilidade</th>
+                        <th class="w-16" role="button" @onclick="() => SortDreamNumbers(nameof(DreamNumberStatistics.Number))">
+                            Número@(currentDreamSortColumn == nameof(DreamNumberStatistics.Number) ? (dreamSortAscending ? " ▲" : " ▼") : "")
+                        </th>
+                        <th class="w-16" role="button" @onclick="() => SortDreamNumbers(nameof(DreamNumberStatistics.Frequency20))">
+                            Freq 20@(currentDreamSortColumn == nameof(DreamNumberStatistics.Frequency20) ? (dreamSortAscending ? " ▲" : " ▼") : "")
+                        </th>
+                        <th class="w-16" role="button" @onclick="() => SortDreamNumbers(nameof(DreamNumberStatistics.Frequency40))">
+                            Freq 40@(currentDreamSortColumn == nameof(DreamNumberStatistics.Frequency40) ? (dreamSortAscending ? " ▲" : " ▼") : "")
+                        </th>
+                        <th class="w-16" role="button" @onclick="() => SortDreamNumbers(nameof(DreamNumberStatistics.Frequency60))">
+                            Freq 60@(currentDreamSortColumn == nameof(DreamNumberStatistics.Frequency60) ? (dreamSortAscending ? " ▲" : " ▼") : "")
+                        </th>
+                        <th class="w-16" role="button" @onclick="() => SortDreamNumbers(nameof(DreamNumberStatistics.CurrentAbsence))">
+                            Ausência@(currentDreamSortColumn == nameof(DreamNumberStatistics.CurrentAbsence) ? (dreamSortAscending ? " ▲" : " ▼") : "")
+                        </th>
+                        <th class="w-16" role="button" @onclick="() => SortDreamNumbers(nameof(DreamNumberStatistics.EstimatedProbability))">
+                            Probabilidade@(currentDreamSortColumn == nameof(DreamNumberStatistics.EstimatedProbability) ? (dreamSortAscending ? " ▲" : " ▼") : "")
+                        </th>
                     </tr>
                 </thead>
                 <tbody>
@@ -152,6 +176,14 @@ else
     private List<DreamNumberStatistics> dreamStats = new();
     private int selectedInterval = 60;
 
+    // Sorting state for Números
+    private string currentSortColumn = nameof(NumberStatistics.Number);
+    private bool sortAscending = true;
+
+    // Sorting state for Números de Sonho
+    private string currentDreamSortColumn = nameof(DreamNumberStatistics.Number);
+    private bool dreamSortAscending = true;
+
     protected override async Task OnInitializedAsync()
     {
         allDraws = await DrawStorage.GetAllAsync();
@@ -173,6 +205,9 @@ else
     {
         stats = StatisticsService.CalculateStatistics(allDraws);
         dreamStats = StatisticsService.CalculateDreamNumberStatistics(allDraws);
+
+        ApplySort();
+        ApplyDreamSort();
 
         renderChartsNeeded = true;
         isLoading = false;
@@ -211,5 +246,102 @@ else
         var labels = dreamStats.Select(s => s.Number).ToArray();
 
         JS.InvokeVoidAsync("renderDreamNumbersChart", labels, absenceData, frequencyData);
+    }
+
+    private void SortNumbers(string column)
+    {
+        if (currentSortColumn == column)
+        {
+            // Toggle direction
+            sortAscending = !sortAscending;
+        }
+        else
+        {
+            currentSortColumn = column;
+            sortAscending = true;
+        }
+
+        ApplySort();
+
+        // Keep charts in sync with the visual ordering if needed
+        renderChartsNeeded = true;
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void ApplySort()
+    {
+        // Default to Number ascending
+        switch (currentSortColumn)
+        {
+            case nameof(NumberStatistics.Number):
+                stats = sortAscending ? stats.OrderBy(s => s.Number).ToList() : stats.OrderByDescending(s => s.Number).ToList();
+                break;
+            case nameof(NumberStatistics.Frequency20):
+                stats = sortAscending ? stats.OrderBy(s => s.Frequency20).ToList() : stats.OrderByDescending(s => s.Frequency20).ToList();
+                break;
+            case nameof(NumberStatistics.Frequency40):
+                stats = sortAscending ? stats.OrderBy(s => s.Frequency40).ToList() : stats.OrderByDescending(s => s.Frequency40).ToList();
+                break;
+            case nameof(NumberStatistics.Frequency60):
+                stats = sortAscending ? stats.OrderBy(s => s.Frequency60).ToList() : stats.OrderByDescending(s => s.Frequency60).ToList();
+                break;
+            case nameof(NumberStatistics.CurrentAbsence):
+                stats = sortAscending ? stats.OrderBy(s => s.CurrentAbsence).ToList() : stats.OrderByDescending(s => s.CurrentAbsence).ToList();
+                break;
+            case nameof(NumberStatistics.EstimatedProbability):
+                stats = sortAscending ? stats.OrderBy(s => s.EstimatedProbability).ToList() : stats.OrderByDescending(s => s.EstimatedProbability).ToList();
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void SortDreamNumbers(string column)
+    {
+        if (currentDreamSortColumn == column)
+        {
+            // Toggle direction
+            dreamSortAscending = !dreamSortAscending;
+        }
+        else
+        {
+            currentDreamSortColumn = column;
+            dreamSortAscending = true;
+        }
+
+        ApplyDreamSort();
+
+        // Keep charts in sync with the visual ordering if needed
+        renderChartsNeeded = true;
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void ApplyDreamSort()
+    {
+        switch (currentDreamSortColumn)
+        {
+            case nameof(DreamNumberStatistics.Number):
+                dreamStats = dreamSortAscending ? dreamStats.OrderBy(s => s.Number).ToList() : dreamStats.OrderByDescending(s => s.Number).ToList();
+                break;
+            case nameof(DreamNumberStatistics.Frequency20):
+                dreamStats = dreamSortAscending ? dreamStats.OrderBy(s => s.Frequency20).ToList() : dreamStats.OrderByDescending(s => s.Frequency20).ToList();
+                break;
+            case nameof(DreamNumberStatistics.Frequency40):
+                dreamStats = dreamSortAscending ? dreamStats.OrderBy(s => s.Frequency40).ToList() : dreamStats.OrderByDescending(s => s.Frequency40).ToList();
+                break;
+            case nameof(DreamNumberStatistics.Frequency60):
+                dreamStats = dreamSortAscending ? dreamStats.OrderBy(s => s.Frequency60).ToList() : dreamStats.OrderByDescending(s => s.Frequency60).ToList();
+                break;
+            case nameof(DreamNumberStatistics.CurrentAbsence):
+                dreamStats = dreamSortAscending ? dreamStats.OrderBy(s => s.CurrentAbsence).ToList() : dreamStats.OrderByDescending(s => s.CurrentAbsence).ToList();
+                break;
+            case nameof(DreamNumberStatistics.EstimatedProbability):
+                dreamStats = dreamSortAscending ? dreamStats.OrderBy(s => s.EstimatedProbability).ToList() : dreamStats.OrderByDescending(s => s.EstimatedProbability).ToList();
+                break;
+            default:
+                break;
+        }
     }
 }

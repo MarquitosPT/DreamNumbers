@@ -35,7 +35,7 @@ namespace DreamNumbers.Services
 
             DateTime today = DateTime.Today;
 
-            for (var date = startDate; date <= today; date = date.AddDays(1))
+            for (var date = startDate; date < today; date = date.AddDays(1))
             {
                 if (date.Year != startDate.Year)
                     drawIndex = 0;

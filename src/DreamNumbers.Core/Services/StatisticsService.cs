@@ -54,7 +54,7 @@ namespace DreamNumbers.Services
         {
             return draws
                 .OrderByDescending(d => d.Date)
-                .TakeLast(interval)
+                .Take(interval)
                 .Count(d => d.Numbers.Contains(number));
         }
 
@@ -62,7 +62,7 @@ namespace DreamNumbers.Services
         {
             return draws
                 .OrderByDescending(d => d.Date)
-                .TakeLast(interval)
+                .Take(interval)
                 .Count(d => d.DreamNumber == number);
         }
 
