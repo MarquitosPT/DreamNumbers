@@ -17,7 +17,9 @@ namespace DreamNumbers.Extensions.Configuration
             services.AddSchedulerService();
             services.AddScheduledTask<DrawUpdateTask>(o =>
             {
-                o.Schedule = Cron.Daily(2);
+                var nextMinute = DateTime.Now.AddMinutes(2).Minute;
+
+                o.Schedule = Cron.Hourly(nextMinute);
                 o.IsEnabled = true;
             });
 
