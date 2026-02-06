@@ -7,22 +7,22 @@ namespace DreamNumbers.Storages.EFCore.SQLite.Extensions.Configuration
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddModuleDbContext(this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddSqliteModuleDbContext(this IServiceCollection services, string connectionString)
         {
-            return services.AddDreamNumbersDbContext(options => options.UseSqlite(connectionString));
+            return services.AddSqliteDreamNumbersDbContext(options => options.UseSqlite(connectionString));
         }
 
-        public static IServiceCollection AddDreamNumbersDbContext(this IServiceCollection services, Action<DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ServiceLifetime optionsLifetime = ServiceLifetime.Scoped)
+        public static IServiceCollection AddSqliteDreamNumbersDbContext(this IServiceCollection services, Action<DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ServiceLifetime optionsLifetime = ServiceLifetime.Scoped)
         {
             return services.AddDreamNumbersDbContext<DreamNumbersDbContext>(optionsAction, contextLifetime, optionsLifetime);
         }
 
-        public static IServiceCollection AddDreamNumbersStorage(this IServiceCollection services, string connectionString)
+        public static IServiceCollection AddSqliteDreamNumbersStorage(this IServiceCollection services, string connectionString)
         {
-            return services.AddDreamNumbersStorage(options => options.UseSqlite(connectionString));
+            return services.AddSqliteDreamNumbersStorage(options => options.UseSqlite(connectionString));
         }
 
-        public static IServiceCollection AddDreamNumbersStorage(this IServiceCollection services, Action<DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ServiceLifetime optionsLifetime = ServiceLifetime.Scoped)
+        public static IServiceCollection AddSqliteDreamNumbersStorage(this IServiceCollection services, Action<DbContextOptionsBuilder>? optionsAction = null, ServiceLifetime contextLifetime = ServiceLifetime.Scoped, ServiceLifetime optionsLifetime = ServiceLifetime.Scoped)
         {
             return services.AddDreamNumbersStorage<DreamNumbersDbContext>(optionsAction, contextLifetime, optionsLifetime);
         }

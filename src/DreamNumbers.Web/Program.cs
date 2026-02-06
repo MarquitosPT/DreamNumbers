@@ -1,12 +1,12 @@
 using DreamNumbers.Extensions.Configuration;
-using DreamNumbers.Storages.EFCore.SQLite.DbContexts;
-using DreamNumbers.Storages.EFCore.SQLite.Extensions.Configuration;
+using DreamNumbers.Storages.EFCore.SQLServer.DbContexts;
+using DreamNumbers.Storages.EFCore.SQLServer.Extensions.Configuration;
 using DreamNumbers.UI.Services;
 using DreamNumbers.Web.Components;
 using DreamNumbers.Web.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace DreamNumbers
+namespace DreamNumbers.Web
 {
     public class Program
     {
@@ -19,7 +19,9 @@ namespace DreamNumbers
                 .AddInteractiveServerComponents();
 
             builder.Services.AddDreamNumbersCore();
-            builder.Services.AddDreamNumbersStorage("Data Source=dreamnumbers.db");
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new NullReferenceException("DefaultConnection is not defined.");
+
+            builder.Services.AddAzureSqlDreamNumbersStorage(connectionString);
 
             // Add device-specific services used by the DreamNumbers.Shared project
             builder.Services.AddSingleton<IFormFactor, FormFactor>();
@@ -43,7 +45,7 @@ namespace DreamNumbers
             app.MapRazorComponents<App>()
                 .AddInteractiveServerRenderMode()
                 .AddAdditionalAssemblies(
-                    typeof(DreamNumbers.UI._Imports).Assembly);
+                    typeof(UI._Imports).Assembly);
 
             using (var scope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {

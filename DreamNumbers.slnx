@@ -21,6 +21,7 @@
   </Folder>
   <Folder Name="/Infrastructure/Storages/">
     <Project Path="src/DreamNumbers.Storages.EFCore.SQLite/DreamNumbers.Storages.EFCore.SQLite.csproj" Id="65cb7e0f-ef80-4f42-ab83-c78516e6cd07" />
+    <Project Path="src/DreamNumbers.Storages.EFCore.SQLServer/DreamNumbers.Storages.EFCore.SQLServer.csproj" Id="96fe2583-65cc-4743-a549-69f4d4bdd4eb" />
     <Project Path="src/DreamNumbers.Storages.EFCore/DreamNumbers.Storages.EFCore.csproj" Id="4a0f979d-6a90-4e8d-908d-d751ac16ddf2" />
   </Folder>
 </Solution>

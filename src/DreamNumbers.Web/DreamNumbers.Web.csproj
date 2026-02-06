@@ -4,11 +4,12 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>bb3ac0db-16e9-49b4-a573-aa77b71daaf7</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DreamNumbers.Core\DreamNumbers.Core.csproj" />
-    <ProjectReference Include="..\DreamNumbers.Storages.EFCore.SQLite\DreamNumbers.Storages.EFCore.SQLite.csproj" />
+    <ProjectReference Include="..\DreamNumbers.Storages.EFCore.SQLServer\DreamNumbers.Storages.EFCore.SQLServer.csproj" />
     <ProjectReference Include="..\DreamNumbers.UI\DreamNumbers.UI.csproj" />
   </ItemGroup>
 
