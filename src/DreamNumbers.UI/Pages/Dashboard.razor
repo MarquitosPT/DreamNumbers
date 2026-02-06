@@ -4,7 +4,15 @@
 @inject IDrawStorage DrawStorage
 @inject IJSRuntime JS
 
-<h2>Painel de estatísticas</h2>
+<PageTitle>Estatísticas</PageTitle>
+
+<h3>Estatísticas dos sorteios</h3>
+<p>
+    Explore as estatísticas dos sorteios do EuroDreams, incluindo a frequência de cada número, a ausência atual e a probabilidade estimada de serem sorteados no próximo sorteio.
+</p>
+<div class="alert alert-info">
+    As estatísticas são calculadas com base nos últimos 60 sorteios, mas você pode escolher o intervalo para visualizar as tendências mais recentes.
+</div>
 
 <div class="mb-3">
     <label>Intervalo:</label>
@@ -21,95 +29,119 @@
 }
 else
 {
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <h4>Números</h4>
-            <canvas id="numbersChart"></canvas>
-        </div>
+    <section>
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h4>Números</h4>
+                <canvas id="numbersChart"></canvas>
+            </div>
 
-        <div class="col-md-6">
-            <h4>Números de Sonho</h4>
-            <canvas id="dreamNumbersChart"></canvas>
+            <div class="col-md-6">
+                <h4>Números de Sonho</h4>
+                <canvas id="dreamNumbersChart"></canvas>
+            </div>
         </div>
-    </div>
-
-    <div class="row mb-3">
-        <div class="col-md-6">
-            <h4>Os 6 números mais prováveis</h4>
-            <ul>
-                @foreach (var n in stats.OrderByDescending(s => s.EstimatedProbability).Take(6))
-                {
-                    <li>@n.Number — @n.EstimatedProbability.ToString("P2")</li>
-                }
-            </ul>
-        </div>
-
-        <div class="col-md-6">
-            <h4>Os 3 números de sonho mais prováveis</h4>
-            <ul>
-                @foreach (var n in dreamStats.OrderByDescending(s => s.EstimatedProbability).Take(3))
-                {
-                    <li>@n.Number — @n.EstimatedProbability.ToString("P2")</li>
-                }
-            </ul>
-        </div>
-    </div>
-
+    </section>
     
 
-    <h4 class="mt-4">Estatísticas de números</h4>
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Número</th>
-                <th>Freq 20</th>
-                <th>Freq 40</th>
-                <th>Freq 60</th>
-                <th>Ausência</th>
-                <th>Probabilidade</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var s in stats)
-            {
-                <tr class="@(s.CurrentAbsence >= 10 ? "high-absence" : "")">
-                    <td>@s.Number</td>
-                    <td>@s.Frequency20</td>
-                    <td>@s.Frequency40</td>
-                    <td>@s.Frequency60</td>
-                    <td>@s.CurrentAbsence</td>
-                    <td>@s.EstimatedProbability.ToString("P2")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
+    <section>
+        <h3>Top de números mais prováveis</h3>
+        <p>
+            Com base nas estatísticas dos últimos sorteios, estes são os números que têm maior probabilidade de serem sorteados no próximo sorteio.
+        </p>
+        <div class="alert alert-info">
+            Lembre-se que cada sorteio é um evento independente, e estas probabilidades são apenas estimativas baseadas em tendências passadas.
+        </div>
+        <div class="row mb-3">
 
-    <h3>Estatísticas de números de sonho</h3>
-    <table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Número</th>
-            <th>Freq 20</th>
-            <th>Freq 40</th>
-            <th>Freq 60</th>
-            <th>Ausência</th>
-            <th>Probabilidade</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var stat in dreamStats)
-        {
-            <tr class="@(stat.CurrentAbsence >= 10 ? "high-absence" : "")">
-                <td>@stat.Number</td>
-                <td>@stat.Frequency20</td>
-                <td>@stat.Frequency40</td>
-                <td>@stat.Frequency60</td>
-                <td>@stat.CurrentAbsence</td>
-                <td>@stat.EstimatedProbability.ToString("P2")</td>
-            </tr>
-        }
-    </tbody>
-</table>
+            <div class="col-md-6">
+                <h4>Números mais prováveis</h4>
+                <ul>
+                    @foreach (var n in stats.OrderByDescending(s => s.EstimatedProbability).Take(6))
+                    {
+                        <li>@n.Number — @n.EstimatedProbability.ToString("P2")</li>
+                    }
+                </ul>
+            </div>
+
+            <div class="col-md-6">
+                <h4>Números de Sonho mais prováveis</h4>
+                <ul>
+                    @foreach (var n in dreamStats.OrderByDescending(s => s.EstimatedProbability).Take(3))
+                    {
+                        <li>@n.Number — @n.EstimatedProbability.ToString("P2")</li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h3>Detalhes das estatísticas</h3>
+        <p>
+            As tabelas abaixo apresentam as estatísticas de cada número, incluindo a frequência nos últimos 20, 40 e 60 sorteios, a ausência atual e a probabilidade estimada de ser sorteado no próximo sorteio.
+        </p>
+        <h4 class="mt-4">Números</h4>
+        <div class="table-responsive pb-3">
+            <table class="table table-striped">
+                <thead>
+                    <tr class="text-nowrap">
+                        <th>Número</th>
+                        <th>Freq 20</th>
+                        <th>Freq 40</th>
+                        <th>Freq 60</th>
+                        <th>Ausência</th>
+                        <th>Probabilidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var s in stats)
+                    {
+                        <tr class="@(s.CurrentAbsence >= 10 ? "high-absence" : "")">
+                            <td>@s.Number</td>
+                            <td>@s.Frequency20</td>
+                            <td>@s.Frequency40</td>
+                            <td>@s.Frequency60</td>
+                            <td>@s.CurrentAbsence</td>
+                            <td>@s.EstimatedProbability.ToString("P2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <h4>Números de sonho</h4>
+        <div class="table-responsive pb-3">
+            <table class="table table-striped">
+                <thead>
+                    <tr class="text-nowrap">
+                        <th>Número</th>
+                        <th>Freq 20</th>
+                        <th>Freq 40</th>
+                        <th>Freq 60</th>
+                        <th>Ausência</th>
+                        <th>Probabilidade</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var stat in dreamStats)
+                    {
+                        <tr class="@(stat.CurrentAbsence >= 10 ? "high-absence" : "")">
+                            <td>@stat.Number</td>
+                            <td>@stat.Frequency20</td>
+                            <td>@stat.Frequency40</td>
+                            <td>@stat.Frequency60</td>
+                            <td>@stat.CurrentAbsence</td>
+                            <td>@stat.EstimatedProbability.ToString("P2")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+    </section>
+    
 }
 
 @code {

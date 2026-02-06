@@ -2,7 +2,12 @@
 
 @inject IDrawStorage DrawRepository
 
-<h2>Draw History</h2>
+<PageTitle>Histórico</PageTitle>
+
+<h3>Histórico de sorteios do EuroDreams</h3>
+<p>
+    Explore o histórico dos últimos sorteios do EuroDreams, incluindo as chaves sorteadas, datas e números de sonho. Use os filtros para visualizar os sorteios mais recentes ou para analisar tendências ao longo do tempo.
+</p>
 
 <div class="mb-3">
     <label>Intervalo:</label>
@@ -19,27 +24,33 @@
 }
 else
 {
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Data</th>
-                <th>Sorteio</th>
-                <th>Números</th>
-                <th>Nº Sonho</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var draw in filteredDraws)
-            {
-                <tr>
-                    <td>@draw.Date.ToString("dd/MM/yyyy")</td>
-                    <td>@draw.DrawNumber</td>
-                    <td>@string.Join(", ", draw.Numbers)</td>
-                    <td>@draw.DreamNumber</td>
+    <div>
+        <p>Exibindo os últimos @filteredDraws.Count sorteios.</p>
+    </div>
+    <div class="table-responsive pb-3">
+        <table class="table table-striped">
+            <thead>
+                <tr class="text-nowrap">
+                    <th>Data</th>
+                    <th>Sorteio</th>
+                    <th>Números</th>
+                    <th>Nº Sonho</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var draw in filteredDraws)
+                {
+                    <tr class="text-nowrap">
+                        <td>@draw.Date.ToString("dd/MM/yyyy")</td>
+                        <td>@draw.DrawNumber</td>
+                        <td>@string.Join(", ", draw.Numbers)</td>
+                        <td>@draw.DreamNumber</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
 }
 
 @code {
