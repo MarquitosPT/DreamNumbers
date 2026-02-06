@@ -32,7 +32,7 @@ else
             @foreach (var draw in filteredDraws)
             {
                 <tr>
-                    <td>@draw.Date.ToString("yyyy-MM-dd")</td>
+                    <td>@draw.Date.ToString("dd/MM/yyyy")</td>
                     <td>@draw.DrawNumber</td>
                     <td>@string.Join(", ", draw.Numbers)</td>
                     <td>@draw.DreamNumber</td>

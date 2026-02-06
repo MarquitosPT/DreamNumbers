@@ -1,0 +1,28 @@
+@if (Draw is not null)
+{
+    <div class="card last-draw-card">
+        <div class="header">
+            <span class="title">Sorteio: @Draw.DrawNumber (@Draw.Date.ToString("dd/MM/yyyy"))</span>
+        </div>
+
+        <div class="numbers">
+            @foreach (var n in Draw.Numbers)
+            {
+                <div class="ball">@n</div>
+            }
+            <span class="plus">+</span>
+            <div class="star">@Draw.DreamNumber</div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="last-draw-card empty">
+        <em>A carregar último sorteio…</em>
+    </div>
+}
+
+@code {
+    [Parameter] public Draw? Draw { get; set; }
+}
+

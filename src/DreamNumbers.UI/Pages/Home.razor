@@ -1,5 +1,34 @@
 @page "/"
+@inject IDrawStorage DrawStorage
 
-<PageTitle>Início</PageTitle>
+<PageTitle>Bem-vindo</PageTitle>
 
-<Dashboard />
+<div class="home-container">
+
+    <section class="welcome">
+        <h1>Bem-vindo</h1>
+        <p>
+            O DreamNumbers é um projeto open-source dedicado à análise inteligente
+            dos resultados do EuroDreams.
+            <br />
+            Aqui podes explorar estatísticas,
+            acompanhar tendências e descobrir padrões interessantes nos sorteios.
+        </p>
+    </section>
+
+    <section class="latest-draw">
+        <h3>Último sorteio</h3>
+        <p>Confere aqui a chave do último sorteio do EuroDreams.</p>
+        <LastDrawCard Draw="@lastDraw" />
+    </section>
+
+</div>
+
+@code {
+    private Draw? lastDraw;
+
+    protected override async Task OnInitializedAsync()
+    {
+        lastDraw = await DrawStorage.GetLastDrawAsync();
+    }
+}

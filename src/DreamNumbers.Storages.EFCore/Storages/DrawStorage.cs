@@ -67,6 +67,7 @@ namespace DreamNumbers.Storages.EFCore.Storages
         {
             var entity = await Context.Draws
                 .OrderByDescending(d => d.Date)
+                .AsNoTracking()
                 .FirstOrDefaultAsync();
 
             return entity == null ? null : DrawMapper.ToModel(entity);
@@ -76,6 +77,7 @@ namespace DreamNumbers.Storages.EFCore.Storages
         {
             return await Context.Draws
                 .OrderByDescending(d => d.Date)
+                .AsNoTracking()
                 .Select(d => (DateTime?)d.Date)
                 .FirstOrDefaultAsync();
         }
