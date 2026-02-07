@@ -28,9 +28,9 @@ else
         <p>Exibindo os últimos @filteredDraws.Count sorteios.</p>
     </div>
     <div class="table-responsive pb-3">
-        <table class="table table-striped">
+        <table class="table table-bordered table-striped">
             <thead>
-                <tr class="text-nowrap">
+                <tr class="text-center text-nowrap">
                     <th>Data</th>
                     <th>Sorteio</th>
                     <th>Números</th>
@@ -40,7 +40,7 @@ else
             <tbody>
                 @foreach (var draw in filteredDraws)
                 {
-                    <tr class="text-nowrap">
+                    <tr class="text-center text-nowrap">
                         <td>@draw.Date.ToString("dd/MM/yyyy")</td>
                         <td>@draw.DrawNumber</td>
                         <td>@string.Join(", ", draw.Numbers)</td>

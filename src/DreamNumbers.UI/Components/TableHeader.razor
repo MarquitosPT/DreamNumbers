@@ -1,0 +1,11 @@
+<th role="button" @onclick="async () => await OnSort.InvokeAsync(Column)">
+    @DisplayName<span class="sort-icon">@((!string.IsNullOrWhiteSpace(SortColumn)) && (Column == SortColumn) ? (Ascending ? "▲" : "▼") : "")</span>
+</th>
+
+@code {
+    [Parameter] public string DisplayName { get; set; } = "";
+    [Parameter] public string Column { get; set; } = "";
+    [Parameter] public string SortColumn { get; set; } = "";
+    [Parameter] public bool Ascending { get; set; } = true;
+    [Parameter] public EventCallback<string> OnSort { get; set; }
+}

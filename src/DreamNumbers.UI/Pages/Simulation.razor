@@ -8,6 +8,28 @@
 </p>
 
 <div class="alert alert-info">
+
+    <!-- Informação da Estratégia -->
+    <h5>Estratégia Selecionada</h5>
+    @if (SelectedStrategyName == "MedianGap")
+    {
+        <div><strong>Median Gap:</strong> prioriza números com intervalos menores que a mediana.</div>
+    }
+    else if (SelectedStrategyName == "HazardRate")
+    {
+        <div><strong>Hazard Rate:</strong> foca em números com alta probabilidade condicional de aparecer.</div>
+    }
+    else if (SelectedStrategyName == "Trend")
+    {
+        <div><strong>Trend:</strong> destaca números com tendências positivas recentes.</div>
+    }
+    else if (SelectedStrategyName == "Composite")
+    {
+        <div><strong>Composite:</strong> combina múltiplas estratégias com pesos ajustáveis.</div>
+    }
+
+    <!-- Informação dos Perfis -->
+    <h5 class="mt-3">Perfil Selecionado</h5>
     @if (SelectedStrategyName == "Composite")
     {
         @if (SelectedProfile == "Conservador")
@@ -41,8 +63,8 @@
         <div class="col-md-4">
             <label>Estratégia</label>
             <select class="form-select" @bind="SelectedStrategyName">
-                <option value="MedianGap">MedianGap</option>
-                <option value="HazardRate">HazardRate</option>
+                <option value="MedianGap">Median Gap</option>
+                <option value="HazardRate">Hazard Rate</option>
                 <option value="Trend">Trend</option>
                 <option value="Composite">Composite</option>
             </select>
@@ -115,35 +137,36 @@
 @if (Result != null)
 {
     <h5>Resultados</h5>
-
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>#</th>
-                <th>Números</th>
-                <th>Nº Sonho</th>
-                <th>Logs</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in Result.Combinations.Select((c, i) => new { c, i }))
-            {
-                <tr>
-                    <td>@(item.i + 1)</td>
-                    <td>@string.Join(", ", item.c.Numbers)</td>
-                    <td>@item.c.DreamNumber</td>
-                    <td>
-                        <button class="btn btn-sm btn-secondary" @onclick="() => ToggleLog(item.i)">
-                            Ver Logs
-                        </button>
-
-                        @if (ExpandedLogIndex == item.i)
-                        {
-                            <pre class="mt-2 p-2 bg-light border">@Logs[item.i]</pre>
-                        }
-                    </td>
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr class="text-center text-nowrap">
+                    <th>#</th>
+                    <th>Números</th>
+                    <th>Nº Sonho</th>
+                    <th>Logs</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                @foreach (var item in Result.Combinations.Select((c, i) => new { c, i }))
+                {
+                    <tr class="text-center text-nowrap">
+                        <td>@(item.i + 1)</td>
+                        <td>@string.Join(", ", item.c.Numbers)</td>
+                        <td>@item.c.DreamNumber</td>
+                        <td>
+                            <button class="btn btn-sm btn-secondary" @onclick="() => ToggleLog(item.i)">
+                                Ver Logs
+                            </button>
+
+                            @if (ExpandedLogIndex == item.i)
+                            {
+                                <pre class="mt-2 p-2 bg-light border">@Logs[item.i]</pre>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 }

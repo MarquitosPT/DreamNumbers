@@ -30,7 +30,7 @@
 else
 {
     <section class="pb-3">
-        
+
         <div class="row">
             <div class="col-md-6">
                 <h4>Números</h4>
@@ -43,7 +43,7 @@ else
             </div>
         </div>
     </section>
-    
+
 
     <section class="pb-3">
         <h3>Os números mais prováveis</h3>
@@ -84,33 +84,21 @@ else
         </p>
         <h4 class="mt-4">Números</h4>
         <div class="table-responsive pb-3">
-            <table class="table table-striped">
+            <table class="table table-bordered table-striped">
                 <thead>
-                    <tr class="text-nowrap">
-                        <th class="w-16" role="button" @onclick="() => SortNumbers(nameof(NumberStatistics.Number))">
-                            Número@(currentSortColumn == nameof(NumberStatistics.Number) ? (sortAscending ? " ▲" : " ▼") : "")
-                        </th>
-                        <th class="w-16" role="button" @onclick="() => SortNumbers(nameof(NumberStatistics.Frequency20))">
-                            Freq 20@(currentSortColumn == nameof(NumberStatistics.Frequency20) ? (sortAscending ? " ▲" : " ▼") : "")
-                        </th>
-                        <th class="w-16" role="button" @onclick="() => SortNumbers(nameof(NumberStatistics.Frequency40))">
-                            Freq 40@(currentSortColumn == nameof(NumberStatistics.Frequency40) ? (sortAscending ? " ▲" : " ▼") : "")
-                        </th>
-                        <th class="w-16" role="button" @onclick="() => SortNumbers(nameof(NumberStatistics.Frequency60))">
-                            Freq 60@(currentSortColumn == nameof(NumberStatistics.Frequency60) ? (sortAscending ? " ▲" : " ▼") : "")
-                        </th>
-                        <th class="w-16" role="button" @onclick="() => SortNumbers(nameof(NumberStatistics.CurrentAbsence))">
-                            Ausência@(currentSortColumn == nameof(NumberStatistics.CurrentAbsence) ? (sortAscending ? " ▲" : " ▼") : "")
-                        </th>
-                        <th class="w-16" role="button" @onclick="() => SortNumbers(nameof(NumberStatistics.EstimatedProbability))">
-                            Probabilidade@(currentSortColumn == nameof(NumberStatistics.EstimatedProbability) ? (sortAscending ? " ▲" : " ▼") : "")
-                        </th>
+                    <tr class="text-center text-nowrap">
+                        <TableHeader DisplayName="Número" Column="@nameof(NumberStatistics.Number)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
+                        <TableHeader DisplayName="Freq 20" Column="@nameof(NumberStatistics.Frequency20)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
+                        <TableHeader DisplayName="Freq 40" Column="@nameof(NumberStatistics.Frequency40)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
+                        <TableHeader DisplayName="Freq 60" Column="@nameof(NumberStatistics.Frequency60)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
+                        <TableHeader DisplayName="Ausência" Column="@nameof(NumberStatistics.CurrentAbsence)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
+                        <TableHeader DisplayName="Probabilidade" Column="@nameof(NumberStatistics.EstimatedProbability)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var s in stats)
                     {
-                        <tr class="@(s.CurrentAbsence >= 10 ? "high-absence" : "")">
+                        <tr class="text-center text-nowrap @(s.CurrentAbsence >= 10 ? "high-absence" : "")">
                             <td>@s.Number</td>
                             <td>@s.Frequency20</td>
                             <td>@s.Frequency40</td>
@@ -125,33 +113,21 @@ else
 
         <h4>Números de Sonho</h4>
         <div class="table-responsive pb-3">
-            <table class="table table-striped">
+            <table class="table table-bordered table-striped">
                 <thead>
-                    <tr class="text-nowrap">
-                        <th class="w-16" role="button" @onclick="() => SortDreamNumbers(nameof(DreamNumberStatistics.Number))">
-                            Número@(currentDreamSortColumn == nameof(DreamNumberStatistics.Number) ? (dreamSortAscending ? " ▲" : " ▼") : "")
-                        </th>
-                        <th class="w-16" role="button" @onclick="() => SortDreamNumbers(nameof(DreamNumberStatistics.Frequency20))">
-                            Freq 20@(currentDreamSortColumn == nameof(DreamNumberStatistics.Frequency20) ? (dreamSortAscending ? " ▲" : " ▼") : "")
-                        </th>
-                        <th class="w-16" role="button" @onclick="() => SortDreamNumbers(nameof(DreamNumberStatistics.Frequency40))">
-                            Freq 40@(currentDreamSortColumn == nameof(DreamNumberStatistics.Frequency40) ? (dreamSortAscending ? " ▲" : " ▼") : "")
-                        </th>
-                        <th class="w-16" role="button" @onclick="() => SortDreamNumbers(nameof(DreamNumberStatistics.Frequency60))">
-                            Freq 60@(currentDreamSortColumn == nameof(DreamNumberStatistics.Frequency60) ? (dreamSortAscending ? " ▲" : " ▼") : "")
-                        </th>
-                        <th class="w-16" role="button" @onclick="() => SortDreamNumbers(nameof(DreamNumberStatistics.CurrentAbsence))">
-                            Ausência@(currentDreamSortColumn == nameof(DreamNumberStatistics.CurrentAbsence) ? (dreamSortAscending ? " ▲" : " ▼") : "")
-                        </th>
-                        <th class="w-16" role="button" @onclick="() => SortDreamNumbers(nameof(DreamNumberStatistics.EstimatedProbability))">
-                            Probabilidade@(currentDreamSortColumn == nameof(DreamNumberStatistics.EstimatedProbability) ? (dreamSortAscending ? " ▲" : " ▼") : "")
-                        </th>
+                    <tr class="text-center text-nowrap">
+                        <TableHeader DisplayName="Número" Column="@nameof(DreamNumberStatistics.Number)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
+                        <TableHeader DisplayName="Freq 20" Column="@nameof(DreamNumberStatistics.Frequency20)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
+                        <TableHeader DisplayName="Freq 40" Column="@nameof(DreamNumberStatistics.Frequency40)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
+                        <TableHeader DisplayName="Freq 60" Column="@nameof(DreamNumberStatistics.Frequency60)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
+                        <TableHeader DisplayName="Ausência" Column="@nameof(DreamNumberStatistics.CurrentAbsence)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
+                        <TableHeader DisplayName="Probabilidade" Column="@nameof(DreamNumberStatistics.EstimatedProbability)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var stat in dreamStats)
                     {
-                        <tr class="@(stat.CurrentAbsence >= 10 ? "high-absence" : "")">
+                        <tr class="text-center text-nowrap @(stat.CurrentAbsence >= 10 ? "high-absence" : "")">
                             <td>@stat.Number</td>
                             <td>@stat.Frequency20</td>
                             <td>@stat.Frequency40</td>
@@ -165,7 +141,7 @@ else
         </div>
 
     </section>
-    
+
 }
 
 @code {
