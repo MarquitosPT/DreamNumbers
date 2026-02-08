@@ -4,13 +4,7 @@ namespace DreamNumbers.Services
 {
     public interface ISimulationEngine
     {
-        SimulationResult Generate(
-            int interval,
-            int combinations,
-            IScoringStrategy strategy,
-            List<Draw> draws,
-            List<NumberStatistics> mainStats,
-            List<DreamNumberStatistics> dreamStats);
+        SimulationResult RunSimulation(IReadOnlyList<Draw> draws, int numberOfCombinations = 5, int numbersPerCombination = 6);
     }
 
 }

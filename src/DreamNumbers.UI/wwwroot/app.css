@@ -104,3 +104,38 @@ h1:focus {
 .w-100 {
     width: 100%;
 }
+
+.profile-selector, .generation-selector {
+    margin-bottom: 2rem;
+}
+
+.profile-item, .preset-item {
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    transition: 0.2s;
+}
+
+    .profile-item:hover, .preset-item:hover {
+        background: #f5f5f5;
+    }
+
+    .profile-item.active, .preset-item.active {
+        border-color: #0078d4;
+        background: #e6f2ff;
+    }
+
+.profile-name, .preset-name {
+    font-weight: bold;
+}
+
+.preset-tag {
+    background: #0078d4;
+    color: white;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+}

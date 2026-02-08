@@ -1,0 +1,104 @@
+.simulation-results {
+    margin-top: 1.5rem;
+    
+}
+
+.combination-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    overflow-x: auto;
+}
+
+.combination-card {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: fit-content;
+    gap: 1.5rem;
+}
+
+.dream-number {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.no-results {
+    margin-top: 1rem;
+    color: #666;
+    font-style: italic;
+}
+
+.combination-card {
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    background: #fafafa;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.numbers {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.number-with-score {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.number {
+    background: #0078d4;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    min-width: 28px;
+    text-align: center;
+}
+
+.dream {
+    background: #ff9800;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.score {
+    font-size: 0.75rem;
+    color: #555;
+    margin-top: 2px;
+}
+
+/* Barra de score genérica */
+.score-bar {
+    width: 40px;
+    height: 4px;
+    background: #ddd;
+    border-radius: 4px;
+    margin-top: 2px;
+}
+
+.score-fill {
+    height: 100%;
+    background: #0078d4;
+    border-radius: 4px;
+}
+
+/* Barra de score específica para DreamNumber */
+.dream-bar {
+    background: #ffe0b2;
+}
+
+.dream-fill {
+    background: #ff9800;
+}

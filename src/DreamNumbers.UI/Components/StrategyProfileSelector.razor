@@ -1,0 +1,26 @@
+@inject ISimulationProfileService ProfileService
+
+<div class="profile-selector">
+    <h3>Perfis de Estratégia</h3>
+
+    @foreach (var profile in ProfileService.Profiles)
+    {
+        <div class="profile-item @(profile.IsActive ? "active" : "")"
+             @onclick="() => SelectProfile(profile)">
+            <div class="profile-name">@profile.Name</div>
+            <div class="profile-description">@profile.Description</div>
+
+            @if (profile.IsPreset)
+            {
+                <span class="preset-tag">Preset</span>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private void SelectProfile(SimulationProfile profile)
+    {
+        ProfileService.SetActiveProfile(profile.Name);
+    }
+}

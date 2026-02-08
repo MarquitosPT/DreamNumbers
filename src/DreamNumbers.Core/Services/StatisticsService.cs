@@ -2,138 +2,228 @@ using DreamNumbers.Models;
 
 namespace DreamNumbers.Services
 {
-    internal class StatisticsService : IStatisticsService
+    public sealed class StatisticsService : IStatisticsService
     {
-        public List<DreamNumberStatistics> CalculateDreamNumberStatistics(List<Draw> draws)
+        public List<NumberStatistics> CalculateMainNumberStatistics(IReadOnlyList<Draw> draws, int maxNumber)
         {
-            var stats = new List<DreamNumberStatistics>();
+            var stats = InitializeStats<NumberStatistics>(maxNumber);
+            ComputeOccurrences(draws, stats, d => d.Numbers);
+            ComputeGaps(stats, draws.Count);
+            ComputeHazardRates(stats);
 
-            for (int n = 1; n <= 5; n++)
+            return stats;
+        }
+
+        public List<DreamNumberStatistics> CalculateDreamNumberStatistics(IReadOnlyList<Draw> draws, int maxDreamNumber)
+        {
+            var stats = InitializeStats<DreamNumberStatistics>(maxDreamNumber);
+            ComputeOccurrences(draws, stats, d => [d.DreamNumber]);
+            ComputeGaps(stats, draws.Count);
+            ComputeHazardRates(stats);
+
+            return stats;
+        }
+
+        public List<DashboardMainStatistics> CalculateDashboardMainStatistics(IReadOnlyList<Draw> draws, int maxNumber)
+        {
+            var stats = InitializeDashboardStats<DashboardMainStatistics>(maxNumber);
+            ComputeDashboardStats(draws, stats, d => d.Numbers);
+            return stats;
+        }
+        public List<DashboardDreamStatistics> CalculateDashboardDreamStatistics(IReadOnlyList<Draw> draws, int maxDreamNumber)
+        {
+            var stats = InitializeDashboardStats<DashboardDreamStatistics>(maxDreamNumber);
+            ComputeDashboardStats(draws, stats, d => [d.DreamNumber]);
+            return stats;
+        }
+
+        private static List<T> InitializeDashboardStats<T>(int maxNumber)
+            where T : BaseDashboardStatistics, new()
+        {
+            var list = new List<T>();
+
+            for (int n = 1; n <= maxNumber; n++)
             {
-                var stat = new DreamNumberStatistics
+                list.Add(new T
+                {
+                    Number = n
+                });
+            }
+
+            return list;
+        }
+
+        private static List<T> InitializeStats<T>(int maxNumber)
+            where T : BaseNumberStatistics, new()
+        {
+            var list = new List<T>();
+
+            for (int n = 1; n <= maxNumber; n++)
+            {
+                list.Add(new T
                 {
                     Number = n,
-                    Frequency20 = CalculateDreamNumberFrequency(draws, n, 20),
-                    Frequency40 = CalculateDreamNumberFrequency(draws, n, 40),
-                    Frequency60 = CalculateDreamNumberFrequency(draws, n, 60),
-                    CurrentAbsence = CalculateDreamNumberAbsence(draws, n)
-                };
-
-                stat.EstimatedProbability = CalculateProbability(stat);
-
-                stats.Add(stat);
+                    Count = 0,
+                    LastSeenIndex = -1
+                });
             }
 
-            return stats;
+            return list;
         }
 
-        public List<NumberStatistics> CalculateStatistics(List<Draw> draws)
+        private static void ComputeDashboardStats<T>(IReadOnlyList<Draw> draws, List<T> stats, Func<Draw, IEnumerable<int>> selector)
+            where T : BaseDashboardStatistics, new()
         {
-            var stats = new List<NumberStatistics>();
+            var orderedDraws = draws.OrderByDescending(d => d.Date).ToList();
 
-            for (int number = 1; number <= 40; number++)
+            var last20 = orderedDraws
+                .Take(20)
+                .ToList();
+
+            var last40 = orderedDraws
+                .Take(40)
+                .ToList();
+
+            var last60 = orderedDraws
+                .Take(60)
+                .ToList();
+
+            // Frequências para os últimos 20 sorteios
+            for (int i = 0; i < last20.Count; i++)
             {
-                var s = new NumberStatistics
+                var draw = last20[i];
+
+                foreach (var num in selector(draw))
                 {
-                    Number = number,
-                    Frequency20 = CalculateFrequency(draws, number, 20),
-                    Frequency40 = CalculateFrequency(draws, number, 40),
-                    Frequency60 = CalculateFrequency(draws, number, 60),
-                    CurrentAbsence = CalculateNumberAbsence(draws, number)
-                };
+                    var s = stats[num - 1];
 
-                s.EstimatedProbability = CalculateProbability(s);
-
-                stats.Add(s);
+                    s.Frequency20++;
+                }
             }
 
-            return stats;
-        }
-
-        private static int CalculateFrequency(List<Draw> draws, int number, int interval)
-        {
-            return draws
-                .OrderByDescending(d => d.Date)
-                .Take(interval)
-                .Count(d => d.Numbers.Contains(number));
-        }
-
-        private static int CalculateDreamNumberFrequency(List<Draw> draws, int number, int interval)
-        {
-            return draws
-                .OrderByDescending(d => d.Date)
-                .Take(interval)
-                .Count(d => d.DreamNumber == number);
-        }
-
-        private int CalculateNumberAbsence(List<Draw> draws, int number)
-        {
-            int count = 0;
-
-            foreach (var draw in draws.OrderByDescending(d => d.Date))
+            // Frequências para os últimos 40 sorteios
+            for (int i = 0; i < last40.Count; i++)
             {
-                if (draw.Numbers.Contains(number))
-                    break;
+                var draw = last40[i];
 
-                count++;
+                foreach (var num in selector(draw))
+                {
+                    var s = stats[num - 1];
+
+                    s.Frequency40++;
+                }
             }
 
-            return count;
-        }
-
-        private int CalculateDreamNumberAbsence(List<Draw> draws, int dreamNumber)
-        {
-            int absence = 0;
-
-            foreach (var draw in draws.OrderByDescending(d => d.Date))
+            // Frequências para os últimos 60 sorteios
+            for (int i = 0; i < last60.Count; i++)
             {
-                if (draw.DreamNumber == dreamNumber)
-                    break;
+                var draw = last60[i];
 
-                absence++;
+                foreach (var num in selector(draw))
+                {
+                    var s = stats[num - 1];
+
+                    s.Frequency60++;
+                }
             }
 
-            return absence;
+            // Ausências atuais
+            for (int i = 0; i < orderedDraws.Count; i++)
+            {
+                var draw = orderedDraws[i];
+
+                foreach (var num in selector(draw))
+                {
+                    var s = stats[num - 1];
+
+                    // Se ainda não foi registrado o índice da última ocorrência, registra agora
+                    if (s.CurrentAbsence == -1)
+                    {
+                        s.CurrentAbsence = i;
+                    }
+                }
+            }
+
+            // Calcula a probabilidade estimada com base nas frequências e ausências
+            foreach (var s in stats)
+            {
+                // Weighted probability model:
+                // Higher absence → higher probability
+                // Frequencies also influence the weight
+                double absenceWeight = s.CurrentAbsence * 1.0;
+                double frequencyWeight =
+                      (s.Frequency20 * 0.5)
+                    + (s.Frequency40 * 0.3)
+                    + (s.Frequency60 * 0.2);
+
+                double score = absenceWeight + frequencyWeight;
+
+                // Normalize to a probability between 0 and 1
+                double maxPossible = (60 * 1.0) + (20 * 0.5 + 40 * 0.3 + 60 * 0.2);
+
+                s.EstimatedProbability = score / maxPossible;
+            }
         }
 
-        private double CalculateProbability(NumberStatistics s)
+        private static void ComputeOccurrences<T>(IReadOnlyList<Draw> draws, List<T> stats, Func<Draw, IEnumerable<int>> selector)
+            where T : BaseNumberStatistics
         {
-            // Weighted probability model:
-            // Higher absence → higher probability
-            // Frequencies also influence the weight
+            var orderedDraws = draws.OrderByDescending(d => d.Date).ToList();
 
-            double absenceWeight = s.CurrentAbsence * 1.0;
-            double frequencyWeight =
-                  (s.Frequency20 * 0.5)
-                + (s.Frequency40 * 0.3)
-                + (s.Frequency60 * 0.2);
+            for (int i = 0; i < orderedDraws.Count; i++)
+            {
+                var draw = orderedDraws[i];
 
-            double score = absenceWeight + frequencyWeight;
+                foreach (var num in selector(draw))
+                {
+                    var s = stats[num - 1];
 
-            // Normalize to a probability between 0 and 1
-            double maxPossible = (60 * 1.0) + (20 * 0.5 + 40 * 0.3 + 60 * 0.2);
+                    if (s.LastSeenIndex != -1)
+                    {
+                        int gap = i - s.LastSeenIndex;
+                        s.Gaps.Add(gap);
+                    }
 
-            return score / maxPossible;
+                    s.LastSeenIndex = i;
+                    s.Count++;
+                }
+            }
         }
 
-        private double CalculateProbability(DreamNumberStatistics s)
+        private static void ComputeGaps<T>(List<T> stats, int totalDraws) where T : BaseNumberStatistics
         {
-            // Weighted probability model:
-            // Higher absence → higher probability
-            // Frequencies also influence the weight
+            foreach (var s in stats)
+            {
+                if (s.LastSeenIndex == -1)
+                    s.Gap = totalDraws; // nunca saiu
+                else
+                    s.Gap = totalDraws - 1 - s.LastSeenIndex;
+            }
+        }
 
-            double absenceWeight = s.CurrentAbsence * 1.0;
-            double frequencyWeight =
-                  (s.Frequency20 * 0.5)
-                + (s.Frequency40 * 0.3)
-                + (s.Frequency60 * 0.2);
+        private static void ComputeHazardRates<T>(List<T> stats)
+            where T : BaseNumberStatistics
+        {
+            foreach (var s in stats)
+            {
+                if (s.Gaps.Count == 0)
+                    continue;
 
-            double score = absenceWeight + frequencyWeight;
+                var groups = s.Gaps
+                    .GroupBy(g => g)
+                    .ToDictionary(g => g.Key, g => g.ToList());
 
-            // Normalize to a probability between 0 and 1
-            double maxPossible = (60 * 1.0) + (20 * 0.5 + 40 * 0.3 + 60 * 0.2);
+                foreach (var kv in groups)
+                {
+                    int gap = kv.Key;
+                    int occurrences = kv.Value.Count;
 
-            return score / maxPossible;
+                    // HazardRate = ocorrências / total de gaps iguais
+                    double hazard = (double)occurrences / groups[gap].Count;
+
+                    s.HazardRates[gap] = hazard;
+                }
+            }
         }
     }
 }

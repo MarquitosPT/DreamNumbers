@@ -7,166 +7,17 @@
     Configure as estratégias e perfis para gerar combinações de números do EuroDreams. Experimente diferentes abordagens para encontrar a que melhor se encaixa no seu estilo de jogo.
 </p>
 
-<div class="alert alert-info">
-
-    <!-- Informação da Estratégia -->
-    <h5>Estratégia Selecionada</h5>
-    @if (SelectedStrategyName == "MedianGap")
-    {
-        <div><strong>Median Gap:</strong> prioriza números com intervalos menores que a mediana.</div>
-    }
-    else if (SelectedStrategyName == "HazardRate")
-    {
-        <div><strong>Hazard Rate:</strong> foca em números com alta probabilidade condicional de aparecer.</div>
-    }
-    else if (SelectedStrategyName == "Trend")
-    {
-        <div><strong>Trend:</strong> destaca números com tendências positivas recentes.</div>
-    }
-    else if (SelectedStrategyName == "Composite")
-    {
-        <div><strong>Composite:</strong> combina múltiplas estratégias com pesos ajustáveis.</div>
-    }
-
-    <!-- Informação dos Perfis -->
-    <h5 class="mt-3">Perfil Selecionado</h5>
-    @if (SelectedStrategyName == "Composite")
-    {
-        @if (SelectedProfile == "Conservador")
-        {
-            <div><strong>Conservador:</strong> privilegia números estáveis, frequentes e com tendência positiva.</div>
-        }
-        else if (SelectedProfile == "Equilibrado")
-        {
-            <div><strong>Equilibrado:</strong> mistura ponderada das três estratégias.</div>
-        }
-        else if (SelectedProfile == "Agressivo")
-        {
-            <div><strong>Agressivo:</strong> favorece números atrasados e com gaps acima da mediana.</div>
-        }
-        else
-        {
-            <div><strong>Personalizado:</strong> ajusta manualmente os pesos das estratégias.</div>
-        }
-    }
-    else
-    {
-        <div>Perfis aplicam-se apenas à estratégia <strong>Composite</strong>.</div>
-    }
-    
-</div>
-
 <div class="card p-3 mb-4">
-    <h5>Configuração</h5>
+    <StrategyProfileSelector />
+    <GenerationPresetSelector />
 
-    <div class="row">
-        <div class="col-md-4">
-            <label>Estratégia</label>
-            <select class="form-select" @bind="SelectedStrategyName">
-                <option value="MedianGap">Median Gap</option>
-                <option value="HazardRate">Hazard Rate</option>
-                <option value="Trend">Trend</option>
-                <option value="Composite">Composite</option>
-            </select>
-        </div>
-
-        <div class="col-md-4">
-            <label>Perfil</label>
-            @if (SelectedStrategyName != "Composite")
-            {
-                <select class="form-select" disabled>
-                    <option>N/A</option>
-                </select>
-            }
-            else
-            {
-                <select class="form-select" @bind="SelectedProfile">
-                    <option value="Conservador">Conservador</option>
-                    <option value="Equilibrado">Equilibrado</option>
-                    <option value="Agressivo">Agressivo</option>
-                    <option value="Personalizado">Personalizado</option>
-                </select>
-            }
-        </div>
-
-        <div class="col-md-4">
-            <label>Intervalo</label>
-            <select class="form-select" @bind="Interval">
-                <option value="20">Últimos 20</option>
-                <option value="40">Últimos 40</option>
-                <option value="60">Últimos 60</option>
-            </select>
-        </div>
-    </div>
-
-    @if (SelectedProfile == "Personalizado")
-    {
-        <div class="mt-4">
-            <h6>Ajuste Personalizado</h6>
-
-            <div class="mb-3">
-                <label>Median Gap</label>
-                <input type="range" min="0" max="1.00" step="0.05" @bind="WeightMedianGap" class="form-range" />
-                <span>@WeightMedianGap</span>
-            </div>
-
-            <div class="mb-3">
-                <label>Hazard Rate</label>
-                <input type="range" min="0" max="1.00" step="0.05" @bind="WeightHazard" class="form-range" />
-                <span>@WeightHazard</span>
-            </div>
-
-            <div class="mb-3">
-                <label>Trend</label>
-                <input type="range" min="0" max="1.00" step="0.05" @bind="WeightTrend" class="form-range" />
-                <span>@WeightTrend</span>
-            </div>
-        </div>
-    }
-
-    <div class="mt-3">
-        <label>Nº de Combinações</label>
-        <input type="number" class="form-control" @bind="Combinations" min="1" max="10" />
-    </div>
-
-    <button class="btn btn-primary mt-3" @onclick="RunSimulation">
-        Gerar Simulação
+    <button class="btn btn-primary" @onclick="RunSimulation">
+        Gerar Combinações
     </button>
+
 </div>
 
-@if (Result != null)
+@if (result != null)
 {
-    <h5>Resultados</h5>
-    <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr class="text-center text-nowrap">
-                    <th>#</th>
-                    <th>Números</th>
-                    <th>Nº Sonho</th>
-                    <th>Logs</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Result.Combinations.Select((c, i) => new { c, i }))
-                {
-                    <tr class="text-center text-nowrap">
-                        <td>@(item.i + 1)</td>
-                        <td>@string.Join(", ", item.c.Numbers)</td>
-                        <td>@item.c.DreamNumber</td>
-                        <td>
-                            <button class="btn btn-sm btn-secondary" @onclick="() => ToggleLog(item.i)">
-                                Ver Logs
-                            </button>
-
-                            @if (ExpandedLogIndex == item.i)
-                            {
-                                <pre class="mt-2 p-2 bg-light border">@Logs[item.i]</pre>
-                            }
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
+    <SimulationResultView Result="result" />
 }

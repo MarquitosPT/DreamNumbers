@@ -1,10 +1,13 @@
 namespace DreamNumbers.Enums
 {
-    public enum ScoringStrategy
+    public enum StrategyType
     {
         MedianGap,
         HazardRate,
         Trend,
+        FrequencyScore,
+        RecencyDecay,
+        GapStability,
         Composite
     }
 }

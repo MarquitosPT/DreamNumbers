@@ -87,12 +87,12 @@ else
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr class="text-center text-nowrap">
-                        <TableHeader DisplayName="Número" Column="@nameof(NumberStatistics.Number)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
-                        <TableHeader DisplayName="Freq 20" Column="@nameof(NumberStatistics.Frequency20)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
-                        <TableHeader DisplayName="Freq 40" Column="@nameof(NumberStatistics.Frequency40)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
-                        <TableHeader DisplayName="Freq 60" Column="@nameof(NumberStatistics.Frequency60)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
-                        <TableHeader DisplayName="Ausência" Column="@nameof(NumberStatistics.CurrentAbsence)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
-                        <TableHeader DisplayName="Probabilidade" Column="@nameof(NumberStatistics.EstimatedProbability)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
+                        <TableHeader DisplayName="Número" Column="@nameof(DashboardMainStatistics.Number)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
+                        <TableHeader DisplayName="Freq 20" Column="@nameof(DashboardMainStatistics.Frequency20)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
+                        <TableHeader DisplayName="Freq 40" Column="@nameof(DashboardMainStatistics.Frequency40)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
+                        <TableHeader DisplayName="Freq 60" Column="@nameof(DashboardMainStatistics.Frequency60)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
+                        <TableHeader DisplayName="Ausência" Column="@nameof(DashboardMainStatistics.CurrentAbsence)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
+                        <TableHeader DisplayName="Probabilidade" Column="@nameof(DashboardMainStatistics.EstimatedProbability)" SortColumn="@currentSortColumn" Ascending="sortAscending" OnSort="SortNumbers" />
                     </tr>
                 </thead>
                 <tbody>
@@ -116,12 +116,12 @@ else
             <table class="table table-bordered table-striped">
                 <thead>
                     <tr class="text-center text-nowrap">
-                        <TableHeader DisplayName="Número" Column="@nameof(DreamNumberStatistics.Number)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
-                        <TableHeader DisplayName="Freq 20" Column="@nameof(DreamNumberStatistics.Frequency20)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
-                        <TableHeader DisplayName="Freq 40" Column="@nameof(DreamNumberStatistics.Frequency40)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
-                        <TableHeader DisplayName="Freq 60" Column="@nameof(DreamNumberStatistics.Frequency60)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
-                        <TableHeader DisplayName="Ausência" Column="@nameof(DreamNumberStatistics.CurrentAbsence)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
-                        <TableHeader DisplayName="Probabilidade" Column="@nameof(DreamNumberStatistics.EstimatedProbability)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
+                        <TableHeader DisplayName="Número" Column="@nameof(DashboardDreamStatistics.Number)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
+                        <TableHeader DisplayName="Freq 20" Column="@nameof(DashboardDreamStatistics.Frequency20)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
+                        <TableHeader DisplayName="Freq 40" Column="@nameof(DashboardDreamStatistics.Frequency40)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
+                        <TableHeader DisplayName="Freq 60" Column="@nameof(DashboardDreamStatistics.Frequency60)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
+                        <TableHeader DisplayName="Ausência" Column="@nameof(DashboardDreamStatistics.CurrentAbsence)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
+                        <TableHeader DisplayName="Probabilidade" Column="@nameof(DashboardDreamStatistics.EstimatedProbability)" SortColumn="@currentDreamSortColumn" Ascending="dreamSortAscending" OnSort="SortDreamNumbers" />
                     </tr>
                 </thead>
                 <tbody>
@@ -148,16 +148,16 @@ else
     private bool isLoading = true;
     private bool renderChartsNeeded = false;
     private List<Draw> allDraws = new();
-    private List<NumberStatistics> stats = new();
-    private List<DreamNumberStatistics> dreamStats = new();
+    private List<DashboardMainStatistics> stats = new();
+    private List<DashboardDreamStatistics> dreamStats = new();
     private int selectedInterval = 60;
 
     // Sorting state for Números
-    private string currentSortColumn = nameof(NumberStatistics.Number);
+    private string currentSortColumn = nameof(DashboardMainStatistics.Number);
     private bool sortAscending = true;
 
     // Sorting state for Números de Sonho
-    private string currentDreamSortColumn = nameof(DreamNumberStatistics.Number);
+    private string currentDreamSortColumn = nameof(DashboardDreamStatistics.Number);
     private bool dreamSortAscending = true;
 
     protected override async Task OnInitializedAsync()
@@ -179,8 +179,8 @@ else
 
     private void LoadStatistics()
     {
-        stats = StatisticsService.CalculateStatistics(allDraws);
-        dreamStats = StatisticsService.CalculateDreamNumberStatistics(allDraws);
+        stats = StatisticsService.CalculateDashboardMainStatistics(allDraws, 40);
+        dreamStats = StatisticsService.CalculateDashboardDreamStatistics(allDraws, 5);
 
         ApplySort();
         ApplyDreamSort();
@@ -250,22 +250,22 @@ else
         // Default to Number ascending
         switch (currentSortColumn)
         {
-            case nameof(NumberStatistics.Number):
+            case nameof(DashboardMainStatistics.Number):
                 stats = sortAscending ? stats.OrderBy(s => s.Number).ToList() : stats.OrderByDescending(s => s.Number).ToList();
                 break;
-            case nameof(NumberStatistics.Frequency20):
+            case nameof(DashboardMainStatistics.Frequency20):
                 stats = sortAscending ? stats.OrderBy(s => s.Frequency20).ToList() : stats.OrderByDescending(s => s.Frequency20).ToList();
                 break;
-            case nameof(NumberStatistics.Frequency40):
+            case nameof(DashboardMainStatistics.Frequency40):
                 stats = sortAscending ? stats.OrderBy(s => s.Frequency40).ToList() : stats.OrderByDescending(s => s.Frequency40).ToList();
                 break;
-            case nameof(NumberStatistics.Frequency60):
+            case nameof(DashboardMainStatistics.Frequency60):
                 stats = sortAscending ? stats.OrderBy(s => s.Frequency60).ToList() : stats.OrderByDescending(s => s.Frequency60).ToList();
                 break;
-            case nameof(NumberStatistics.CurrentAbsence):
+            case nameof(DashboardMainStatistics.CurrentAbsence):
                 stats = sortAscending ? stats.OrderBy(s => s.CurrentAbsence).ToList() : stats.OrderByDescending(s => s.CurrentAbsence).ToList();
                 break;
-            case nameof(NumberStatistics.EstimatedProbability):
+            case nameof(DashboardMainStatistics.EstimatedProbability):
                 stats = sortAscending ? stats.OrderBy(s => s.EstimatedProbability).ToList() : stats.OrderByDescending(s => s.EstimatedProbability).ToList();
                 break;
             default:
@@ -298,22 +298,22 @@ else
     {
         switch (currentDreamSortColumn)
         {
-            case nameof(DreamNumberStatistics.Number):
+            case nameof(DashboardDreamStatistics.Number):
                 dreamStats = dreamSortAscending ? dreamStats.OrderBy(s => s.Number).ToList() : dreamStats.OrderByDescending(s => s.Number).ToList();
                 break;
-            case nameof(DreamNumberStatistics.Frequency20):
+            case nameof(DashboardDreamStatistics.Frequency20):
                 dreamStats = dreamSortAscending ? dreamStats.OrderBy(s => s.Frequency20).ToList() : dreamStats.OrderByDescending(s => s.Frequency20).ToList();
                 break;
-            case nameof(DreamNumberStatistics.Frequency40):
+            case nameof(DashboardDreamStatistics.Frequency40):
                 dreamStats = dreamSortAscending ? dreamStats.OrderBy(s => s.Frequency40).ToList() : dreamStats.OrderByDescending(s => s.Frequency40).ToList();
                 break;
-            case nameof(DreamNumberStatistics.Frequency60):
+            case nameof(DashboardDreamStatistics.Frequency60):
                 dreamStats = dreamSortAscending ? dreamStats.OrderBy(s => s.Frequency60).ToList() : dreamStats.OrderByDescending(s => s.Frequency60).ToList();
                 break;
-            case nameof(DreamNumberStatistics.CurrentAbsence):
+            case nameof(DashboardDreamStatistics.CurrentAbsence):
                 dreamStats = dreamSortAscending ? dreamStats.OrderBy(s => s.CurrentAbsence).ToList() : dreamStats.OrderByDescending(s => s.CurrentAbsence).ToList();
                 break;
-            case nameof(DreamNumberStatistics.EstimatedProbability):
+            case nameof(DashboardDreamStatistics.EstimatedProbability):
                 dreamStats = dreamSortAscending ? dreamStats.OrderBy(s => s.EstimatedProbability).ToList() : dreamStats.OrderByDescending(s => s.EstimatedProbability).ToList();
                 break;
             default:

@@ -58,7 +58,7 @@ namespace DreamNumbers.Storages.EFCore.Storages
 
         public async Task<List<Draw>> GetAllAsync()
         {
-            var result = await Context.Draws.AsNoTracking().ToListAsync();
+            var result = await Context.Draws.OrderByDescending(d => d.Date).AsNoTracking().ToListAsync();
 
             return [.. result.Select(e => DrawMapper.ToModel(e))];
         }

@@ -1,108 +1,201 @@
-using System.Security.Cryptography;
+using DreamNumbers.Enums;
 using DreamNumbers.Models;
 
-namespace DreamNumbers.Services;
-
-public class SimulationEngine : ISimulationEngine
+namespace DreamNumbers.Services
 {
-    public SimulationResult Generate(
-        int interval,
-        int combinations,
-        IScoringStrategy strategy,
-        List<Draw> draws,
-        List<NumberStatistics> mainStats,
-        List<DreamNumberStatistics> dreamStats)
+    public sealed class SimulationEngine : ISimulationEngine
     {
-        var mainScores = strategy.CalculateMainNumberScores(draws, mainStats, interval);
-        var dreamScores = strategy.CalculateDreamNumberScores(draws, dreamStats, interval);
+        private readonly IStatisticsService _statisticsService;
+        private readonly ISimulationProfileService _profileService;
+        private readonly IStrategyBuilder _strategyBuilder;
+        private readonly ICombinationGenerationPresetService _generationPresetService;
 
-        var normalizedMain = NormalizeScores(mainScores);
-        var normalizedDream = NormalizeScores(dreamScores);
-
-        var result = new SimulationResult();
-
-        for (int i = 0; i < combinations; i++)
+        public SimulationEngine(
+            IStatisticsService statisticsService,
+            ISimulationProfileService profileService,
+            IStrategyBuilder strategyBuilder,
+            ICombinationGenerationPresetService generationPresetService)
         {
-            var numbers = WeightedPick(normalizedMain, 6);
-            var dream = WeightedPick(normalizedDream, 1).First();
+            _statisticsService = statisticsService;
+            _profileService = profileService;
+            _strategyBuilder = strategyBuilder;
+            _generationPresetService = generationPresetService;
+        }
 
-            result.Combinations.Add(new SimulatedCombination
+        public SimulationResult RunSimulation(
+            IReadOnlyList<Draw> draws,
+            int numberOfCombinations = 5,
+            int numbersPerCombination = 6)
+        {
+            if (draws.Count == 0)
+                throw new InvalidOperationException("Não existem sorteios para simular.");
+
+            // 1. Obter perfil ativo
+            var profile = _profileService.GetActiveProfile();
+            var generationPreset = _generationPresetService.GetActivePreset();
+
+
+            // 2. Construir estratégia
+            var strategy = _strategyBuilder.Build(profile);
+
+            // 3. Calcular estatísticas
+            var mainStats = _statisticsService.CalculateMainNumberStatistics(draws, profile.Config.MaxMainNumber);
+            var dreamStats = _statisticsService.CalculateDreamNumberStatistics(draws, profile.Config.MaxDreamNumber);
+
+            // 4. Calcular scores
+            var mainScores = strategy.CalculateMainNumberScores(draws, mainStats, profile.Config);
+            var dreamScores = strategy.CalculateDreamNumberScores(draws, dreamStats, profile.Config);
+
+            // 5. Gerar combinações
+            var combinations = generationPreset.Mode switch
             {
-                Numbers = numbers.OrderBy(n => n).ToList(),
-                DreamNumber = dream
-            });
+                CombinationGenerationMode.Deterministic =>
+                    GenerateDeterministic(mainScores, dreamScores,
+                        generationPreset.DefaultCombinationCount,
+                        generationPreset.NumbersPerCombination),
+
+                CombinationGenerationMode.Probabilistic =>
+                    GenerateProbabilistic(mainScores, dreamScores,
+                        generationPreset.DefaultCombinationCount,
+                        generationPreset.NumbersPerCombination),
+
+                CombinationGenerationMode.Hybrid =>
+                    GenerateHybrid(mainScores, dreamScores,
+                        generationPreset.DefaultCombinationCount,
+                        generationPreset.NumbersPerCombination,
+                        generationPreset.HybridTopPercentage),
+
+                _ => throw new NotImplementedException()
+            };
+
+            return new SimulationResult
+            {
+                Combinations = combinations,
+                MainScores = mainScores,
+                DreamScores = dreamScores
+            };
         }
 
-        return result;
-    }
-
-    private Dictionary<int, double> NormalizeScores(Dictionary<int, double> scores)
-    {
-        // Se todos forem zero, distribui uniformemente
-        if (scores.Values.All(v => v <= 0))
+        private static List<SimulatedCombination> GenerateDeterministic(
+            Dictionary<int, double> mainScores,
+            Dictionary<int, double> dreamScores,
+            int count,
+            int numbersPerCombination)
         {
-            double uniform = 1.0 / scores.Count;
-            return scores.Keys.ToDictionary(k => k, _ => uniform);
+            var orderedMain = mainScores.OrderByDescending(kv => kv.Value).Select(kv => kv.Key).ToList();
+            var orderedDream = dreamScores.OrderByDescending(kv => kv.Value).Select(kv => kv.Key).ToList();
+
+            var combinations = new List<SimulatedCombination>();
+
+            for (int i = 0; i < count; i++)
+            {
+                combinations.Add(new SimulatedCombination
+                {
+                    Numbers = orderedMain.Skip(i).Take(numbersPerCombination).OrderBy(n => n).ToList(),
+                    DreamNumber = orderedDream[i % orderedDream.Count]
+                });
+            }
+
+            return combinations;
         }
 
-        // Shift para evitar negativos
-        double min = scores.Values.Min();
-        if (min < 0)
+        private static List<SimulatedCombination> GenerateProbabilistic(
+            Dictionary<int, double> mainScores,
+            Dictionary<int, double> dreamScores,
+            int count,
+            int numbersPerCombination)
         {
-            scores = scores.ToDictionary(kv => kv.Key, kv => kv.Value - min);
+            var combinations = new List<SimulatedCombination>();
+
+            for (int i = 0; i < count; i++)
+            {
+                var numbers = WeightedRandomSelection(mainScores, numbersPerCombination);
+                var dream = WeightedRandomSelection(dreamScores, 1).First();
+
+                combinations.Add(new SimulatedCombination
+                {
+                    Numbers = numbers.OrderBy(n => n).ToList(),
+                    DreamNumber = dream
+                });
+            }
+
+            return combinations;
         }
 
-        double sum = scores.Values.Sum();
-        if (sum == 0)
+        private static List<int> WeightedRandomSelection(Dictionary<int, double> scores, int amount)
         {
-            double uniform = 1.0 / scores.Count;
-            return scores.Keys.ToDictionary(k => k, _ => uniform);
+            var selected = new List<int>();
+            var pool = new Dictionary<int, double>(scores);
+
+            var rnd = new Random();
+
+            for (int i = 0; i < amount; i++)
+            {
+                double total = pool.Values.Sum();
+                double roll = rnd.NextDouble() * total;
+
+                double cumulative = 0;
+                int chosen = pool.First().Key;
+
+                foreach (var kv in pool)
+                {
+                    cumulative += kv.Value;
+                    if (roll <= cumulative)
+                    {
+                        chosen = kv.Key;
+                        break;
+                    }
+                }
+
+                selected.Add(chosen);
+                pool.Remove(chosen);
+            }
+
+            return selected;
         }
 
-        return scores.ToDictionary(kv => kv.Key, kv => kv.Value / sum);
-    }
-
-    private List<int> WeightedPick(Dictionary<int, double> weights, int count)
-    {
-        var picked = new HashSet<int>();
-        var list = weights.ToList();
-
-        while (picked.Count < count && picked.Count < list.Count)
+        private static List<SimulatedCombination> GenerateHybrid(
+            Dictionary<int, double> mainScores,
+            Dictionary<int, double> dreamScores,
+            int count,
+            int numbersPerCombination,
+            double topPercentage)
         {
-            int chosen = WeightedSinglePick(list, picked);
-            picked.Add(chosen);
+            var orderedMain = mainScores
+                .OrderByDescending(kv => kv.Value)
+                .Select(kv => kv.Key)
+                .ToList();
+
+            var orderedDream = dreamScores
+                .OrderByDescending(kv => kv.Value)
+                .Select(kv => kv.Key)
+                .ToList();
+
+            var combinations = new List<SimulatedCombination>();
+            var rnd = new Random();
+
+            int topCount = (int)Math.Round(numbersPerCombination * topPercentage);
+            int randomCount = numbersPerCombination - topCount;
+
+            for (int i = 0; i < count; i++)
+            {
+                var combo = new List<int>();
+
+                // Parte determinística (Top-N)
+                combo.AddRange(orderedMain.Take(topCount));
+
+                // Parte probabilística
+                var randoms = WeightedRandomSelection(mainScores, randomCount);
+                combo.AddRange(randoms);
+
+                combinations.Add(new SimulatedCombination
+                {
+                    Numbers = combo.OrderBy(n => n).ToList(),
+                    DreamNumber = orderedDream[rnd.Next(orderedDream.Count)]
+                });
+            }
+
+            return combinations;
         }
-
-        return picked.ToList();
-    }
-
-    private int WeightedSinglePick(List<KeyValuePair<int, double>> weights, HashSet<int> exclude)
-    {
-        var filtered = weights.Where(kv => !exclude.Contains(kv.Key)).ToList();
-        double total = filtered.Sum(kv => kv.Value);
-        if (total == 0)
-        {
-            return filtered[RandomNumberGenerator.GetInt32(filtered.Count)].Key;
-        }
-
-        double r = NextDouble() * total;
-        double acc = 0;
-
-        foreach (var kv in filtered)
-        {
-            acc += kv.Value;
-            if (r <= acc)
-                return kv.Key;
-        }
-
-        return filtered.Last().Key;
-    }
-
-    private double NextDouble()
-    {
-        Span<byte> bytes = stackalloc byte[8];
-        RandomNumberGenerator.Fill(bytes);
-        ulong ul = BitConverter.ToUInt64(bytes);
-        return (ul / (double)ulong.MaxValue);
     }
 }

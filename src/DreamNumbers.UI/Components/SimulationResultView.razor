@@ -1,0 +1,58 @@
+@if (Result == null || Result.Combinations.Count == 0)
+{
+    <div class="no-results">
+        Nenhuma combinação gerada.
+    </div>
+}
+else
+{
+    <div class="simulation-results">
+        <h3>Combinações Geradas</h3>
+
+        <div class="combination-list">
+            @foreach (var combo in Result.Combinations)
+            {
+                <div class="combination-card">
+                    <div class="numbers">
+                        @foreach (var n in combo.Numbers)
+                        {
+                            string numberScore = ((double)(Result.MainScores[n] * 100)).ToString("F2", System.Globalization.CultureInfo.InvariantCulture) + "%";
+                            <div class="number-with-score" title="Score: @FormatScore(Result.MainScores[n])">
+                                <span class="number">@n</span>
+                                <span class="score">@FormatScore(Result.MainScores[n])</span>
+
+                                <div class="score-bar">
+                                    <div class="score-fill" style="width:@numberScore"></div>
+                                </div>
+                            </div>
+                            
+                        }
+                    </div>
+
+                    <div class="dream-number">
+                        <div class="number-with-score" title="Score: @FormatScore(Result.DreamScores[combo.DreamNumber])">
+                            <span class="dream">@combo.DreamNumber</span>
+                            <span class="score">@FormatScore(Result.DreamScores[combo.DreamNumber])</span>
+                            @{
+                                string dreamScore = ((double)(Result.DreamScores[combo.DreamNumber] * 100)).ToString("F2", System.Globalization.CultureInfo.InvariantCulture) + "%";
+
+                                <div class="score-bar dream-bar">
+                                    <div class="score-fill dream-fill" style="width:@dreamScore"></div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+}
+
+@code {
+    [Parameter]
+    public SimulationResult? Result { get; set; }
+
+    private string FormatScore(double score)
+        => score.ToString("0.000");
+}

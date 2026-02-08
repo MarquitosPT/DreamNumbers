@@ -1,0 +1,26 @@
+@inject ICombinationGenerationPresetService GenerationService
+
+<div class="generation-selector">
+    <h3>Modo de Geração</h3>
+
+    @foreach (var preset in GenerationService.Presets)
+    {
+        <div class="preset-item @(preset.IsActive ? "active" : "")"
+             @onclick="() => SelectPreset(preset)">
+            <div class="preset-name">@preset.Name</div>
+            <div class="preset-description">@preset.Description</div>
+
+            @if (preset.IsPreset)
+            {
+                <span class="preset-tag">Preset</span>
+            }
+        </div>
+    }
+</div>
+
+@code {
+    private void SelectPreset(CombinationGenerationPreset preset)
+    {
+        GenerationService.SetActivePreset(preset.Name);
+    }
+}

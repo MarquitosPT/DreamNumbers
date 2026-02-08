@@ -9,6 +9,8 @@ namespace DreamNumbers.Models
     public class SimulationResult
     {
         public List<SimulatedCombination> Combinations { get; set; } = new();
-    }
 
+        public Dictionary<int, double> MainScores { get; set; } = new();
+        public Dictionary<int, double> DreamScores { get; set; } = new();
+    }
 }

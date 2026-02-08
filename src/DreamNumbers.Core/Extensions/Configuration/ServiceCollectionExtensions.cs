@@ -1,7 +1,7 @@
 using DreamNumbers.ScheduledTasks;
-using DreamNumbers.ScoringStrategies;
 using DreamNumbers.Services;
 using DreamNumbers.Services.EUDreams.Extensions.Configuration;
+using DreamNumbers.Strategies;
 using Marquitos.Schedulers;
 using Marquitos.Schedulers.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,18 +24,24 @@ namespace DreamNumbers.Extensions.Configuration
             });
 
             // Application services
-            services.AddScoped<IStatisticsService, StatisticsService>();
-            services.AddScoped<ISimulationEngine, SimulationEngine>();
             services.AddScoped<IDrawUpdateService, DrawUpdateService>();
+            services.AddScoped<IStatisticsService, StatisticsService>();
+            services.AddScoped<ICombinationGenerationPresetService, CombinationGenerationPresetService>();
+            services.AddScoped<ISimulationProfileService, SimulationProfileService>();
+            services.AddScoped<ISimulationEngine, SimulationEngine>();
 
-            // Factories
-            services.AddSingleton<IScoringStrategyFactory, ScoringStrategyFactory>();
+            // Buliders e Factories
+            services.AddSingleton<IStrategyBuilder, StrategyBuilder>();
+            services.AddSingleton<IStrategyFactory, StrategyFactory>();
 
             // Strategies
-            services.AddSingleton<IScoringStrategy, TrendStrategy>();
-            services.AddSingleton<IScoringStrategy, HazardRateStrategy>();
-            services.AddSingleton<IScoringStrategy, MedianGapStrategy>();
-            services.AddSingleton<IScoringStrategy, CompositeStrategy>();
+            services.AddScoped<IScoringStrategy, TrendStrategy>();
+            services.AddScoped<IScoringStrategy, HazardRateStrategy>();
+            services.AddScoped<IScoringStrategy, MedianGapStrategy>();
+            services.AddScoped<IScoringStrategy, FrequencyScoreStrategy>();
+            services.AddScoped<IScoringStrategy, RecencyDecayStrategy>();
+            services.AddScoped<IScoringStrategy, GapStabilityStrategy>();
+            services.AddScoped<IScoringStrategy, CompositeStrategy>();
 
             services.AddEUDreamsService();
 
