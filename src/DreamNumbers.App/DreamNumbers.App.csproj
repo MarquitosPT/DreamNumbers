@@ -57,17 +57,24 @@
     <MauiAsset Include="Resources\Raw\**" LogicalName="%(RecursiveDir)%(Filename)%(Extension)" />
   </ItemGroup>
 
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Maui.Controls" Version="$(MauiVersion)" />
-    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="$(MauiVersion)" />
-    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.0" />
+
+    <ItemGroup>
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.31" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="10.0.31" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.2" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\DreamNumbers.Core\DreamNumbers.Core.csproj" />
-    <ProjectReference Include="..\DreamNumbers.Services.JSC\DreamNumbers.Services.JSC.csproj" />
+    <ProjectReference Include="..\DreamNumbers.Services.EUDreams\DreamNumbers.Services.EUDreams.csproj" />
     <ProjectReference Include="..\DreamNumbers.Storages.EFCore.SQLite\DreamNumbers.Storages.EFCore.SQLite.csproj" />
     <ProjectReference Include="..\DreamNumbers.UI\DreamNumbers.UI.csproj" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-android'">
+    <PackageReference Include="Xamarin.AndroidX.Work.Runtime">
+      <Version>2.10.3</Version>
+    </PackageReference>
   </ItemGroup>
 
 </Project>

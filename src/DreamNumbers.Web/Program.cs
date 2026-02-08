@@ -19,8 +19,9 @@ namespace DreamNumbers.Web
                 .AddInteractiveServerComponents();
 
             builder.Services.AddDreamNumbersCore();
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new NullReferenceException("DefaultConnection is not defined.");
+            builder.Services.AddDreamNumbersScheduler();
 
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new NullReferenceException("DefaultConnection is not defined.");
             builder.Services.AddAzureSqlDreamNumbersStorage(connectionString);
 
             // Add device-specific services used by the DreamNumbers.Shared project

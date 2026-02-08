@@ -9,10 +9,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="Marquitos.Schedulers" Version="1.0.9" />
     </ItemGroup>
 

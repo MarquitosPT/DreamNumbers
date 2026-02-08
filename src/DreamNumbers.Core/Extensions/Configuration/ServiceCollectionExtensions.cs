@@ -10,9 +10,8 @@ namespace DreamNumbers.Extensions.Configuration
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddDreamNumbersCore(this IServiceCollection services)
+        public static IServiceCollection AddDreamNumbersScheduler(this IServiceCollection services)
         {
-            
             // Scheduler
             services.AddSchedulerService();
             services.AddScheduledTask<DrawUpdateTask>(o =>
@@ -23,6 +22,10 @@ namespace DreamNumbers.Extensions.Configuration
                 o.IsEnabled = true;
             });
 
+            return services;
+        }
+        public static IServiceCollection AddDreamNumbersCore(this IServiceCollection services)
+        {
             // Application services
             services.AddScoped<IDrawUpdateService, DrawUpdateService>();
             services.AddScoped<IStatisticsService, StatisticsService>();
