@@ -49,7 +49,7 @@ namespace DreamNumbers.Services.EUDreams.Services
             if (dateNode == null)
                 return null;
 
-            DateTime parsedDate = DateTime.Parse(dateNode.InnerText.Trim());
+            DateTime parsedDate = DateTime.Parse(dateNode.InnerText.Trim(), System.Globalization.CultureInfo.GetCultureInfo("pt"));
 
             // 2) Números principais
             var numberNodes = doc.DocumentNode.SelectNodes("//li[@class='ball ball']");
