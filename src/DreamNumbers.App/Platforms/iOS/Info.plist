@@ -17,7 +17,6 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
@@ -33,9 +32,9 @@
 		<string>fetch</string>
 		<string>processing</string>
 	</array>
-	<key>BGTaskSchedulerPermittedIdentifiers</key> 
-	<array> 
-		<string>com.dreamnumbers.drawupdate</string> 
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.dreamnumbers.drawupdate</string>
 	</array>
 </dict>
 </plist>

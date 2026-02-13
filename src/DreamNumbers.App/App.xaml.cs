@@ -1,4 +1,4 @@
-﻿namespace DreamNumbers
+namespace DreamNumbers
 {
     public partial class App : Application
     {
@@ -9,7 +9,7 @@
 
         protected override Window CreateWindow(IActivationState? activationState)
         {
-            return new Window(new MainPage()) { Title = "DreamNumbers" };
+            return new Window(new MainPage()) { Title = "Dream Numbers" };
         }
     }
 }

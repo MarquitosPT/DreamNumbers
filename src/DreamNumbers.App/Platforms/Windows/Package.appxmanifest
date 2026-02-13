@@ -6,14 +6,14 @@
   xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
   IgnorableNamespaces="uap rescap">
 
-  <Identity Name="maui-package-name-placeholder" Publisher="CN=User Name" Version="0.0.0.0" />
+  <Identity Name="37008MarquitosPT.9769894D2E1D" Publisher="CN=855BE1DE-2E8C-49F5-B597-8D29C7070EC6" Version="1.1.2.0" />
 
   <mp:PhoneIdentity PhoneProductId="6C6608D6-620F-4623-B2D8-FA4CF47A87AD" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
 
   <Properties>
-    <DisplayName>$placeholder$</DisplayName>
-    <PublisherDisplayName>User Name</PublisherDisplayName>
-    <Logo>$placeholder$.png</Logo>
+    <DisplayName>Dream Numbers</DisplayName>
+    <PublisherDisplayName>MarquitosPT</PublisherDisplayName>
+    <Logo>Platforms\Windows\Assets\dream_numbers_package.png</Logo>
   </Properties>
 
   <Dependencies>
@@ -28,19 +28,29 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
       <uap:VisualElements
-        DisplayName="$placeholder$"
-        Description="$placeholder$"
-        Square150x150Logo="$placeholder$.png"
-        Square44x44Logo="$placeholder$.png"
+        DisplayName="Dream Numbers"
+        Description="Dream Numbers é um projeto open-source dedicado à análise inteligente dos resultados do EuroDreams."
+        Square150x150Logo="Platforms\Windows\Assets\dream_numbers_medium.png"
+        Square44x44Logo="Platforms\Windows\Assets\dream_numbers_icon.png"
         BackgroundColor="transparent">
-        <uap:DefaultTile Square71x71Logo="$placeholder$.png" Wide310x150Logo="$placeholder$.png" Square310x310Logo="$placeholder$.png" />
-        <uap:SplashScreen Image="$placeholder$.png" />
+        <uap:DefaultTile Square71x71Logo="Platforms\Windows\Assets\dream_numbers_small.png" Wide310x150Logo="Platforms\Windows\Assets\dream_numbers_wide.png" Square310x310Logo="Platforms\Windows\Assets\dream_numbers_large.png"  >
+          <uap:ShowNameOnTiles>
+            <uap:ShowOn Tile="square150x150Logo"/>
+            <uap:ShowOn Tile="wide310x150Logo"/>
+            <uap:ShowOn Tile="square310x310Logo"/>
+          </uap:ShowNameOnTiles>
+        </uap:DefaultTile >
+        <uap:SplashScreen Image="Platforms\Windows\Assets\dream_numbers_splash.png" />
+        <uap:InitialRotationPreference>
+          <uap:Rotation Preference="landscape"/>
+          <uap:Rotation Preference="portrait"/></uap:InitialRotationPreference>
+        <uap:LockScreen BadgeLogo="Platforms\Windows\Assets\dream_numbers_badge.png" Notification="badgeAndTileText"/>
       </uap:VisualElements>
     </Application>
   </Applications>
 
   <Capabilities>
-    <rescap:Capability Name="runFullTrust" />
+    <Capability Name="internetClient"/>
   </Capabilities>
 
 </Package>
