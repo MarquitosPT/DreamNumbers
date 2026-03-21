@@ -10,11 +10,12 @@
 <div class="card p-3 mb-4">
     <StrategyProfileSelector />
     <GenerationPresetSelector />
+    <SmartHybridAdvancedSettings />
+    <SmartHybridPreview Draws="draws" />
 
     <button class="btn btn-primary" @onclick="RunSimulation">
         Gerar Combinações
-    </button>
-
+    </button> 
 </div>
 
 @if (result != null)

@@ -1,0 +1,51 @@
+@inject IJSRuntime JS
+
+@if (Preview == null)
+{
+    <div class="no-preview">
+        Ajuste os sliders do Smart Hybrid 2.0 para ver a distribuição dos scores.
+    </div>
+}
+else
+{
+    <div class="score-chart-container">
+        <canvas id="scoreChart"></canvas>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public SmartHybridPreviewResult? Preview { get; set; }
+
+    private IJSObjectReference? _chartModule;
+    private IJSObjectReference? _chartInstance;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (Preview == null)
+            return;
+
+        if (_chartModule == null)
+            _chartModule = await JS.InvokeAsync<IJSObjectReference>("import", "./_content/DreamNumbers.UI/js/smartHybridChart.js");
+
+        await RenderChart();
+    }
+
+    private async Task RenderChart()
+    {
+        if (_chartModule == null || Preview == null)
+            return;
+
+        var labels = Preview.MainScores.Keys.OrderBy(n => n).ToList();
+        var baseScores = labels.Select(n => Preview.MainScores[n]).ToList();
+        var adjustedScores = labels.Select(n => Preview.AdjustedMainScores[n]).ToList();
+
+        _chartInstance = await _chartModule.InvokeAsync<IJSObjectReference>(
+            "renderSmartHybridChart",
+            "scoreChart",
+            labels,
+            baseScores,
+            adjustedScores
+        );
+    }
+}

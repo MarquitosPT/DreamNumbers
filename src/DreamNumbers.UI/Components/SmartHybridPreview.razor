@@ -1,0 +1,88 @@
+@using DreamNumbers.Enums
+@inject ICombinationGenerationPresetService GenerationService
+@inject IStatisticsService Statistics
+@inject ISimulationProfileService ProfileService
+@inject IStrategyBuilder StrategyBuilder
+
+@if (preset?.Mode == CombinationGenerationMode.SmartHybrid2)
+{
+    <TabControl>
+        <Tab Title="Pré‑visualização">
+            @if (preview != null)
+            {
+                <SmartHybridPreviewPanel Preset="preset" Preview="preview" />
+            }
+        </Tab>
+
+        <Tab Title="Distribuição de Scores">
+            @if (preview != null)
+            {
+                <SmartHybridScoreChart Preview="preview" />
+            }
+        </Tab>
+    </TabControl>
+}
+
+@code {
+    private CombinationGenerationPreset? preset;
+    private SmartHybridPreviewResult? preview;
+
+    [Parameter]
+    public IReadOnlyList<Draw> Draws { get; set; } = Array.Empty<Draw>();
+
+    protected override void OnInitialized()
+    {
+        GenerationService.OnPresetChanged += Refresh;
+        GenerationService.OnPresetUpdated += Refresh;
+
+        Refresh();
+    }
+
+    private void Refresh()
+    {
+        preset = GenerationService.GetActivePreset();
+
+        if (preset?.Mode != CombinationGenerationMode.SmartHybrid2)
+        {
+            preview = null;
+            InvokeAsync(StateHasChanged);
+            return;
+        }
+
+        preview = GeneratePreview();
+        InvokeAsync(StateHasChanged);
+    }
+
+    private SmartHybridPreviewResult? GeneratePreview()
+    {
+        if (preset == null)
+            return null;
+
+        var draws = Draws;
+        var profile = ProfileService.GetActiveProfile();
+        var strategy = StrategyBuilder.Build(profile);
+
+        var mainStats = Statistics.CalculateMainNumberStatistics(draws, profile.Config.MaxMainNumber);
+        var dreamStats = Statistics.CalculateDreamNumberStatistics(draws, profile.Config.MaxDreamNumber);
+
+        var mainScores = strategy.CalculateMainNumberScores(draws, mainStats, profile.Config);
+        var dreamScores = strategy.CalculateDreamNumberScores(draws, dreamStats, profile.Config);
+
+        // Aqui chamamos uma versão simplificada do SmartHybrid2
+        return SmartHybridPreviewCalculator.Calculate(
+            mainScores,
+            dreamScores,
+            preset.NumbersPerCombination,
+            preset.HybridTopPercentage,
+            preset.DiversityPenalty,
+            preset.SimilarityAvoidance,
+            preset.DreamTopBias
+        );
+    }
+
+    public void Dispose()
+    {
+        GenerationService.OnPresetChanged -= Refresh;
+        GenerationService.OnPresetUpdated -= Refresh;
+    }
+}

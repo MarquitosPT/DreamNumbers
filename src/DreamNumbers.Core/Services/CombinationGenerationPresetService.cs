@@ -48,6 +48,19 @@ namespace DreamNumbers.Services
                     DefaultCombinationCount = 5,
                     NumbersPerCombination = 6,
                     IsPreset = true
+                },
+                new CombinationGenerationPreset
+                {
+                    Name = "Smart Hybrid 2.0",
+                    Description = "Modo avançado com heurísticas de diversidade e DreamNumber inteligente.",
+                    Mode = CombinationGenerationMode.SmartHybrid2,
+                    HybridTopPercentage = 0.6,
+                    DiversityPenalty = 0.5,
+                    SimilarityAvoidance = 0.4,
+                    DreamTopBias = 0.7,
+                    DefaultCombinationCount = 5,
+                    NumbersPerCombination = 6,
+                    IsPreset = true
                 }
             ]);
         }
@@ -55,10 +68,20 @@ namespace DreamNumbers.Services
         public CombinationGenerationPreset GetActivePreset()
             => _presets.First(p => p.IsActive);
 
+        public event Action? OnPresetChanged;
+        public event Action? OnPresetUpdated;
+
         public void SetActivePreset(string name)
         {
             foreach (var p in _presets)
                 p.IsActive = p.Name == name;
+
+            OnPresetChanged?.Invoke();
+        }
+
+        public void NotifyPresetUpdated()
+        {
+            OnPresetUpdated?.Invoke();
         }
 
         public void AddPreset(CombinationGenerationPreset preset)

@@ -1,0 +1,21 @@
+@namespace DreamNumbers.UI.Components
+
+<CascadingValue Value="this">
+    @ChildContent
+
+    <ul class="nav nav-tabs">
+        @foreach (var tab in Tabs)
+        {
+            <li class="nav-item">
+                <button class="nav-link @(tab == ActiveTab ? "active" : "")"
+                        @onclick="() => SelectTab(tab)">
+                    @tab.Title
+                </button>
+            </li>
+        }
+    </ul>
+
+    <div class="tab-content p-3 border border-top-0 rounded-bottom">
+        @ActiveTab?.ChildContent
+    </div>
+</CascadingValue>

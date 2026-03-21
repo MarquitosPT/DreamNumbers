@@ -1,0 +1,35 @@
+<input type="range"
+       min="@Min.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+       max="@Max.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+       step="@Step.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+       value="@ValueString"
+       @oninput="OnInput" />
+
+@code {
+    [Parameter] public double Value { get; set; }
+    [Parameter] public EventCallback<double> ValueChanged { get; set; }
+
+    [Parameter] public EventCallback OnValueUpdated { get; set; }
+
+    [Parameter] public double Min { get; set; }
+    [Parameter] public double Max { get; set; }
+    [Parameter] public double Step { get; set; }
+
+    private string ValueString =>
+        Value.ToString(System.Globalization.CultureInfo.InvariantCulture);
+
+    private async Task OnInput(ChangeEventArgs e)
+    {
+        if (double.TryParse(e.Value?.ToString(),
+            System.Globalization.NumberStyles.Any,
+            System.Globalization.CultureInfo.InvariantCulture,
+            out var v))
+        {
+            await ValueChanged.InvokeAsync(v);
+
+            // Notificar o preset/preview
+            if (OnValueUpdated.HasDelegate)
+                await OnValueUpdated.InvokeAsync();
+        }
+    }
+}

@@ -4,6 +4,7 @@ namespace DreamNumbers.Enums
     {
         Deterministic,
         Probabilistic,
-        Hybrid
+        Hybrid,
+        SmartHybrid2
     }
 }

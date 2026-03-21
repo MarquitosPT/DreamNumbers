@@ -1,3 +1,4 @@
+@using DreamNumbers.Enums
 @inject ICombinationGenerationPresetService GenerationService
 
 <div class="generation-selector">
@@ -7,13 +8,34 @@
     {
         <div class="preset-item @(preset.IsActive ? "active" : "")"
              @onclick="() => SelectPreset(preset)">
-            <div class="preset-name">@preset.Name</div>
-            <div class="preset-description">@preset.Description</div>
 
-            @if (preset.IsPreset)
-            {
-                <span class="preset-tag">Preset</span>
-            }
+            <div class="preset-header">
+                <div class="preset-name">
+                    @preset.Name
+
+                    @if (preset.Mode == CombinationGenerationMode.SmartHybrid2)
+                    {
+                        <span class="smart-badge" title="Modo avançado com heurísticas de diversidade, penalização de repetição e DreamNumber inteligente">
+                            ⚡ Avançado
+                        </span>
+                    }
+                    else if (preset.IsPreset)
+                    {
+                        <span class="preset-tag">Preset</span>
+                    }
+                </div>
+
+                <div class="preset-description">@preset.Description</div>
+                @if (preset.Mode == CombinationGenerationMode.SmartHybrid2)
+                {
+                    <div class="advanced-details">
+                        • Núcleo forte baseado em Top‑N
+                        • Randomização ponderada com penalização de repetição
+                        • Diversidade global entre combinações
+                        • DreamNumber inteligente (Top‑K + Weighted Random)
+                    </div>
+                }
+            </div>
         </div>
     }
 </div>

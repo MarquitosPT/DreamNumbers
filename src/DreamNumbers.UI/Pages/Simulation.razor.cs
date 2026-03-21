@@ -8,14 +8,18 @@ namespace DreamNumbers.UI.Pages
     public partial class Simulation : ComponentBase
     {
         private SimulationResult? result;
+        private IReadOnlyList<Draw> draws = [];
 
         [Inject] public IDrawStorage DrawRepository { get; set; } = default!;
         [Inject] ISimulationEngine Engine { get; set; } = null!;
 
+        override protected async Task OnInitializedAsync()
+        {
+            draws = await DrawRepository.GetAllAsync();
+        }
+
         private async Task RunSimulation()
         {
-            var draws = await DrawRepository.GetAllAsync();
-
             result = Engine.RunSimulation(draws);
         }
     }

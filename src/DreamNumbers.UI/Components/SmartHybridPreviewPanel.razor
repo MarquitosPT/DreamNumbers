@@ -1,0 +1,38 @@
+@if (Preview != null && Preset != null)
+{
+    <div class="preview-panel">
+        <h4>Pré‑visualização do Smart Hybrid 2.0</h4>
+
+        <div class="preview-combination">
+            @foreach (var n in Preview.Numbers)
+            {
+                <div class="preview-number">
+                    <span class="num">@n</span>
+                    <span class="score">@Format(Preview.MainScores[n])</span>
+                </div>
+            }
+
+            <div class="preview-dream">
+                <span class="label">Dream:</span>
+                <span class="dream">@Preview.DreamNumber</span>
+                <span class="score">@Format(Preview.DreamScores[Preview.DreamNumber])</span>
+            </div>
+        </div>
+
+        <div class="preview-details">
+            <div>Penalização Global: @Preview.GlobalPenalty.ToString("0.00")</div>
+            <div>Similaridade Prevista: @Preview.Similarity.ToString("0.00")</div>
+            <div>Bias Dream Top-K: @(Math.Round(Preset.DreamTopBias * 100))%</div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public SmartHybridPreviewResult? Preview { get; set; }
+
+    [Parameter]
+    public CombinationGenerationPreset? Preset { get; set; }
+
+    private string Format(double v) => v.ToString("0.000");
+}
