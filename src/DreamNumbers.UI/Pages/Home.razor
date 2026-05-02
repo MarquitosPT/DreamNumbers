@@ -1,5 +1,7 @@
 @page "/"
+@using DreamNumbers.UI.Services
 @inject IDrawStorage DrawStorage
+@inject IFormFactor FormFactor
 
 <PageTitle>Bem-vindo</PageTitle>
 
@@ -24,13 +26,34 @@
         <LastDrawCard Draw="@lastDraw" />
     </section>
 
+    @if (isWeb)
+    {
+        <section>
+            <div class="row">
+                <div class="col-auto">
+                    <div class="alert alert-success">
+                        <h4 class="alert-heading">Aplicação Disponível!</h4>
+                        <p>Dream Numbers também está disponível na Microsoft Store.<br /> Descarrega a aplicação hoje mesmo.</p>
+                        <a class="alert-link" href="https://apps.microsoft.com/detail/9N84KQ7G3QB5" target="_blank" rel="noopener noreferrer">
+                            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAk0lEQVR4nO3XMQ7CMBBE0Tl19la0SJREOYHnHFT0pkgElHa8Ehb6X3I71itcWCIimrPwpnA9f8r6tXVL22pu6MLjfLaeaVvNATAAAQgAewAMoAIIAJ0BMACNAco6dmm5v7cWX7T4cf6Uaz+A/utLuaVt/egR5201B8AABCAA7AEwgAogAHQGwAA0zZcyc4uISDP1AjWXURg49UyHAAAAAElFTkSuQmCC" alt="windows-11">
+                            Ver na Microsoft Store
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    }
+
+
 </div>
 
 @code {
     private Draw? lastDraw;
+    private bool isWeb;
 
     protected override async Task OnInitializedAsync()
     {
+        isWeb = (FormFactor.GetFormFactor() == "Web");
         lastDraw = await DrawStorage.GetLastDrawAsync();
     }
 }
