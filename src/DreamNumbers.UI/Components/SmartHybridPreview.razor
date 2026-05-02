@@ -6,21 +6,23 @@
 
 @if (preset?.Mode == CombinationGenerationMode.SmartHybrid2)
 {
-    <TabControl>
-        <Tab Title="Pré‑visualização">
-            @if (preview != null)
-            {
-                <SmartHybridPreviewPanel Preset="preset" Preview="preview" />
-            }
-        </Tab>
+    <div class="mb-3">
+        <TabControl>
+            <Tab Title="Pré‑visualização">
+                @if (preview != null)
+                {
+                    <SmartHybridPreviewPanel Preset="preset" Preview="preview" />
+                }
+            </Tab>
 
-        <Tab Title="Distribuição de Scores">
-            @if (preview != null)
-            {
-                <SmartHybridScoreChart Preview="preview" />
-            }
-        </Tab>
-    </TabControl>
+            <Tab Title="Distribuição de Scores">
+                @if (preview != null)
+                {
+                    <SmartHybridScoreChart Preview="preview" />
+                }
+            </Tab>
+        </TabControl>
+    </div>
 }
 
 @code {

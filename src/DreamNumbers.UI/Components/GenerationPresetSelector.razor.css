@@ -65,6 +65,7 @@
     padding-left: 0.5rem;
     border-left: 3px solid #ff9800;
     opacity: 0.9;
+    list-style: none;
 }
 
 /* Animação suave para destacar o modo avançado */

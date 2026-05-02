@@ -1,48 +1,60 @@
 @using DreamNumbers.Enums
 @inject ICombinationGenerationPresetService GenerationService
 
-<div class="generation-selector">
-    <h3>Modo de Geração</h3>
-
-    @foreach (var preset in GenerationService.Presets)
-    {
-        <div class="preset-item @(preset.IsActive ? "active" : "")"
-             @onclick="() => SelectPreset(preset)">
-
-            <div class="preset-header">
-                <div class="preset-name">
-                    @preset.Name
-
-                    @if (preset.Mode == CombinationGenerationMode.SmartHybrid2)
-                    {
-                        <span class="smart-badge" title="Modo avançado com heurísticas de diversidade, penalização de repetição e DreamNumber inteligente">
-                            ⚡ Avançado
-                        </span>
-                    }
-                    else if (preset.IsPreset)
-                    {
-                        <span class="preset-tag">Preset</span>
-                    }
-                </div>
-
-                <div class="preset-description">@preset.Description</div>
-                @if (preset.Mode == CombinationGenerationMode.SmartHybrid2)
+<div class="mb-3">
+    <label class="form-label" for="presetDropdown">Modo de Geração</label>
+    <div class="dropdown">
+        <button class="form-control dropdown-toggle" type="button" id="presetDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            @GetActivePresetName()
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="presetDropdown">
+            @foreach (var preset in GenerationService.Presets)
+            {
+                <li>
+                    <button class="dropdown-item d-flex flex-column text-start @(preset.IsActive ? "active" : "")"
+                            type="button" @onclick="() => SelectPreset(preset)">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>@preset.Name</strong>
+                            @if (preset.Mode == CombinationGenerationMode.SmartHybrid2)
+                            {
+                                <span class="smart-badge" title="Modo avançado com heurísticas de diversidade, penalização de repetição e DreamNumber inteligente">
+                                    ⚡ Avançado
+                                </span>
+                            }
+                            else if (preset.IsPreset)
+                            {
+                                <span class="badge bg-info text-dark ms-2">Preset</span>
+                            }
+                        </div>
+                        <small class="text-muted">@preset.Description</small>
+                        @if (preset.Mode == CombinationGenerationMode.SmartHybrid2)
+                        {
+                            <ul class="advanced-details">
+                                <li>Núcleo forte baseado em Top‑N</li>
+                                <li>Randomização ponderada com penalização de repetição</li>
+                                <li>Diversidade global entre combinações</li>
+                                <li>DreamNumber inteligente (Top‑K + Weighted Random)</li>
+                            </ul>
+                        }
+                    </button>
+                </li>
+                if (preset != GenerationService.Presets.Last())
                 {
-                    <div class="advanced-details">
-                        • Núcleo forte baseado em Top‑N
-                        • Randomização ponderada com penalização de repetição
-                        • Diversidade global entre combinações
-                        • DreamNumber inteligente (Top‑K + Weighted Random)
-                    </div>
+                    <li><hr class="dropdown-divider"></li>
                 }
-            </div>
-        </div>
-    }
+            }
+        </ul>
+    </div>
 </div>
 
 @code {
     private void SelectPreset(CombinationGenerationPreset preset)
     {
         GenerationService.SetActivePreset(preset.Name);
+    }
+
+    private string GetActivePresetName()
+    {
+        return GenerationService.Presets.FirstOrDefault(p => p.IsActive)?.Name ?? "Modo de Geração";
     }
 }

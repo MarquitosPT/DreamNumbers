@@ -1,26 +1,46 @@
+@using System.Linq
 @inject ISimulationProfileService ProfileService
 
-<div class="profile-selector">
-    <h3>Perfis de Estratégia</h3>
-
-    @foreach (var profile in ProfileService.Profiles)
-    {
-        <div class="profile-item @(profile.IsActive ? "active" : "")"
-             @onclick="() => SelectProfile(profile)">
-            <div class="profile-name">@profile.Name</div>
-            <div class="profile-description">@profile.Description</div>
-
-            @if (profile.IsPreset)
+<div class="mb-3">
+    <label class="form-label" for="profileDropdown">Perfis de Estratégia</label>
+    <div class="dropdown">
+        <button class="form-control dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            @GetActiveProfileName()
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+            @foreach (var profile in ProfileService.Profiles)
             {
-                <span class="preset-tag">Preset</span>
+                <li>
+                    <button class="dropdown-item d-flex flex-column text-start @(profile.IsActive ? "active" : "")"
+                            type="button" @onclick="() => SelectProfile(profile)">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <strong>@profile.Name</strong>
+                            @if (profile.IsPreset)
+                            {
+                                <span class="badge bg-info text-dark ms-2">Preset</span>
+                            }
+                        </div>
+                        <small class="text-muted">@profile.Description</small>
+                    </button>
+                </li>
+                if (profile != ProfileService.Profiles.Last())
+                {
+                    <li><hr class="dropdown-divider"></li>
+                }
             }
-        </div>
-    }
+        </ul>
+    </div>
 </div>
+
 
 @code {
     private void SelectProfile(SimulationProfile profile)
     {
         ProfileService.SetActiveProfile(profile.Name);
+    }
+
+    private string GetActiveProfileName()
+    {
+        return ProfileService.Profiles.FirstOrDefault(p => p.IsActive)?.Name ?? "Perfis de Estratégia";
     }
 }

@@ -8,14 +8,25 @@
 </p>
 
 <div class="card p-3 mb-4">
-    <StrategyProfileSelector />
-    <GenerationPresetSelector />
-    <SmartHybridAdvancedSettings />
-    <SmartHybridPreview Draws="draws" />
-
-    <button class="btn btn-primary" @onclick="RunSimulation">
-        Gerar Combinações
-    </button> 
+    <div class="row">
+        <div class="col-xs col-sm-auto">
+            <StrategyProfileSelector />
+        </div>
+        <div class="col-xs col-sm-auto">
+            <GenerationPresetSelector />
+        </div>
+        <div class="col-auto">
+        </div>
+        <div class="col-12">
+            <SmartHybridAdvancedSettings />
+        </div>
+        <div class="col-12"><SmartHybridPreview Draws="draws" /></div>
+        <div class="col-12">
+            <button class="btn btn-primary" @onclick="RunSimulation">
+                Gerar Combinações
+            </button>
+        </div>
+    </div>
 </div>
 
 @if (result != null)
