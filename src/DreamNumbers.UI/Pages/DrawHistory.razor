@@ -1,97 +1,36 @@
 @page "/draws"
 
-@inject IDrawStorage DrawRepository
+@inject ILotterySelector LotterySelector
 
-<PageTitle>Histórico</PageTitle>
-
-<h3>Histórico de sorteios do EuroDreams</h3>
-<p>
-    Explore o histórico dos últimos sorteios do EuroDreams, incluindo as chaves sorteadas, datas e números de sonho. Use os filtros para visualizar os sorteios mais recentes ou para analisar tendências ao longo do tempo.
-</p>
-
-<div class="mb-3">
-    <label>Intervalo:</label>
-    <select class="form-select w-auto" @bind="selectedInterval" @oninput="OnIntervalChanged">
-        <option value="20">Últimos 20</option>
-        <option value="40">Últimos 40</option>
-        <option value="60">Últimos 60</option>
-    </select>
-</div>
-
-@if (filteredDraws == null)
+@if(LotterySelector.GetLottery() == Enums.LotteryGame.EuroDreams)
 {
-    <p>Carregando sorteios...</p>
+    <EuroDreamsDrawHistory />
+}
+else if (LotterySelector.GetLottery() == Enums.LotteryGame.EuroMillions)
+{
+    <EuroMillionsDrawHistory />
 }
 else
 {
-    <div>
-        <p>Exibindo os últimos @filteredDraws.Count sorteios.</p>
+    <div class="alert alert-warning" role="alert">
+        Por favor, selecione uma lotaria válida para visualizar o histórico de sorteios.
     </div>
-    <div class="table-responsive pb-3">
-        <table class="table table-bordered table-striped">
-            <thead>
-                <tr class="text-center text-nowrap">
-                    <th>Data</th>
-                    <th>Sorteio</th>
-                    <th>Números</th>
-                    <th>Nº Sonho</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var draw in filteredDraws)
-                {
-                    <tr class="text-center text-nowrap">
-                        <td>@draw.Date.ToString("dd/MM/yyyy")</td>
-                        <td>@draw.DrawNumber</td>
-                        <td>@string.Join(", ", draw.Numbers)</td>
-                        <td>@draw.DreamNumber</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-    </div>
-
 }
 
 @code {
-    private List<Draw>? allDraws;
-    private List<Draw>? filteredDraws;
-    private int selectedInterval = 20;
-
     protected override async Task OnInitializedAsync()
     {
-        await ReloadDraws();
+        LotterySelector.SetVisible(true);
+        LotterySelector.OnLotteryChanged += OnLotteryChanged;
     }
 
-    private void ApplyFilter()
+    private void OnLotteryChanged(Enums.LotteryGame newLottery)
     {
-        if (selectedInterval == 0)
-        {
-            filteredDraws = allDraws?
-                .OrderByDescending(d => d.Date)
-                .ToList();
-        }
-        else
-        {
-            filteredDraws = allDraws?
-                .OrderByDescending(d => d.Date)
-                .Take(selectedInterval)
-                .ToList();
-        }
+        InvokeAsync(StateHasChanged);
     }
 
-    private void OnIntervalChanged(ChangeEventArgs e)
+    public void Dispose()
     {
-        selectedInterval = int.Parse(e.Value?.ToString() ?? "60");
-        ApplyFilter();
+        LotterySelector.OnLotteryChanged -= OnLotteryChanged;
     }
-
-    private async Task ReloadDraws()
-    {
-        allDraws = await DrawRepository.GetAllAsync();
-        ApplyFilter();
-
-        StateHasChanged();
-    }
-
 }

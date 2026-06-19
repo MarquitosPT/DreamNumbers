@@ -19,6 +19,7 @@ namespace DreamNumbers.Storages.EFCore.Extensions.Configuration
             services.AddDreamNumbersDbContext<TContext>(optionsAction, contextLifetime, optionsLifetime);
 
             services.AddScoped<IDrawStorage, DrawStorage<TContext>>();
+            services.AddScoped<IEuroMillionDrawStorage, EuroMillionDrawStorage<TContext>>();
 
             return services;
         }

@@ -15,7 +15,7 @@ namespace DreamNumbers.Storages.EFCore.SQLite.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "10.0.2");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.9");
 
             modelBuilder.Entity("DreamNumbers.Storages.EFCore.Entities.Draw", b =>
                 {
@@ -41,6 +41,33 @@ namespace DreamNumbers.Storages.EFCore.SQLite.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Draws", (string)null);
+                });
+
+            modelBuilder.Entity("DreamNumbers.Storages.EFCore.Entities.EuroMillionDraw", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DrawNumber")
+                        .IsRequired()
+                        .HasMaxLength(16)
+                        .HasColumnType("TEXT");
+
+                    b.PrimitiveCollection<string>("Numbers")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.PrimitiveCollection<string>("Stars")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EuroMillionDraws", (string)null);
                 });
 #pragma warning restore 612, 618
         }

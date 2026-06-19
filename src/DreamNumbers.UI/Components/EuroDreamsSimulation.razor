@@ -1,0 +1,33 @@
+<PageTitle>Simulador - EuroDreams</PageTitle>
+
+<h3>Simulador de Combinações</h3>
+<p>
+    Configure as estratégias e perfis para gerar combinações de números do EuroDreams. Experimente diferentes abordagens para encontrar a que melhor se encaixa no seu estilo de jogo.
+</p>
+
+<div class="card p-3 mb-4">
+    <div class="row">
+        <div class="col-xs col-sm-auto">
+            <StrategyProfileSelector />
+        </div>
+        <div class="col-xs col-sm-auto">
+            <GenerationPresetSelector />
+        </div>
+        <div class="col-auto">
+        </div>
+        <div class="col-12">
+            <SmartHybridAdvancedSettings />
+        </div>
+        <div class="col-12"><SmartHybridPreview Draws="draws" /></div>
+        <div class="col-12">
+            <button class="btn btn-primary" @onclick="RunSimulation">
+                Gerar Combinações
+            </button>
+        </div>
+    </div>
+</div>
+
+@if (result != null)
+{
+    <SimulationResultView Result="result" />
+}

@@ -2,7 +2,7 @@
   <Folder Name="/Application/" />
   <Folder Name="/Application/Platforms/">
     <Project Path="src/DreamNumbers.App/DreamNumbers.App.csproj">
-      <Deploy Solution="Debug|*" />
+      <Deploy />
     </Project>
     <Project Path="src/DreamNumbers.Web/DreamNumbers.Web.csproj" />
   </Folder>

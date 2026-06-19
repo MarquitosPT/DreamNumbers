@@ -15,6 +15,8 @@ namespace DreamNumbers.Storages.EFCore.DbContexts
         }
 
         internal DbSet<Draw> Draws => Set<Draw>();
+
+        internal DbSet<EuroMillionDraw> EuroMillionDraws => Set<EuroMillionDraw>();
     }
 
 }

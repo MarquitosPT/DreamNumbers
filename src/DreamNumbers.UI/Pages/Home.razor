@@ -1,5 +1,6 @@
 @page "/"
 @using DreamNumbers.UI.Services
+@inject ILotterySelector LotterySelector
 @inject IDrawStorage DrawStorage
 @inject IFormFactor FormFactor
 
@@ -53,6 +54,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        LotterySelector.SetVisible(false);
+
         isWeb = (FormFactor.GetFormFactor() == "Web");
         lastDraw = await DrawStorage.GetLastDrawAsync();
     }

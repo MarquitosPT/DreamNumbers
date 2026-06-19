@@ -1,35 +1,33 @@
 @page "/simulation"
+@inject ILotterySelector LotterySelector
 
-<PageTitle>Simulador</PageTitle>
-
-<h3>Simulador de Combinações</h3>
-<p>
-    Configure as estratégias e perfis para gerar combinações de números do EuroDreams. Experimente diferentes abordagens para encontrar a que melhor se encaixa no seu estilo de jogo.
-</p>
-
-<div class="card p-3 mb-4">
-    <div class="row">
-        <div class="col-xs col-sm-auto">
-            <StrategyProfileSelector />
-        </div>
-        <div class="col-xs col-sm-auto">
-            <GenerationPresetSelector />
-        </div>
-        <div class="col-auto">
-        </div>
-        <div class="col-12">
-            <SmartHybridAdvancedSettings />
-        </div>
-        <div class="col-12"><SmartHybridPreview Draws="draws" /></div>
-        <div class="col-12">
-            <button class="btn btn-primary" @onclick="RunSimulation">
-                Gerar Combinações
-            </button>
-        </div>
-    </div>
-</div>
-
-@if (result != null)
+@if (LotterySelector.GetLottery() == Enums.LotteryGame.EuroDreams)
 {
-    <SimulationResultView Result="result" />
+    <EuroDreamsSimulation />
+}
+else if (LotterySelector.GetLottery() == Enums.LotteryGame.EuroMillions)
+{
+    <EuroMillionsSimulation />
+}
+else
+{
+    <div class="alert alert-warning" role="alert">
+        Por favor, selecione uma lotaria válida para visualizar a simulação.
+    </div>
+}
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        LotterySelector.SetVisible(true);
+        LotterySelector.OnLotteryChanged += OnLotteryChanged;
+    }
+    private void OnLotteryChanged(Enums.LotteryGame newLottery)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+    public void Dispose()
+    {
+        LotterySelector.OnLotteryChanged -= OnLotteryChanged;
+    }
 }

@@ -1,0 +1,50 @@
+@using DreamNumbers.Enums
+
+@if (LotterySelector.IsVisible())
+{
+    <div class="card border-0">
+        <div class="card-header">
+            <ul class="nav nav-tabs card-header-tabs">
+                <li class="nav-item">
+                    <button type="button" class="nav-link @(LotterySelector.GetLottery() == LotteryGame.EuroDreams ? "active" : "")"
+                            @onclick="() => LotterySelector.SetLottery(LotteryGame.EuroDreams)">
+                        EuroDreams
+                    </button>
+                </li>
+                <li class="nav-item">
+                    <button type="button" class="nav-link @(LotterySelector.GetLottery() == LotteryGame.EuroMillions ? "active" : "")"
+                            @onclick="() => LotterySelector.SetLottery(LotteryGame.EuroMillions)">
+                        EuroMilhões
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+}
+
+@code {
+    [Inject]
+    private ILotterySelector LotterySelector { get; set; } = default!;
+
+    protected override void OnInitialized()
+    {
+        LotterySelector.OnLotteryChanged += OnLotteryChanged;
+        LotterySelector.OnVisibilityChanged += OnVisibilityChanged;
+    }
+
+    private void Dispose()
+    {
+        LotterySelector.OnLotteryChanged -= OnLotteryChanged;
+        LotterySelector.OnVisibilityChanged -= OnVisibilityChanged;
+    }
+
+    private void OnLotteryChanged(LotteryGame newLottery)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    private void OnVisibilityChanged(bool isVisible)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+}

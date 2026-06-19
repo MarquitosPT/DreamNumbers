@@ -3,9 +3,9 @@ using DreamNumbers.Services;
 using DreamNumbers.Storages;
 using Microsoft.AspNetCore.Components;
 
-namespace DreamNumbers.UI.Pages
+namespace DreamNumbers.UI.Components
 {
-    public partial class Simulation : ComponentBase
+    public partial class EuroDreamsSimulation : ComponentBase
     {
         private SimulationResult? result;
         private IReadOnlyList<Draw> draws = [];
