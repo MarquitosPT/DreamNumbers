@@ -1,9 +1,95 @@
+@inject IEuroMillionDrawStorage DrawRepository
+
 <PageTitle>Histórico - EuroMilhões</PageTitle>
 
-<div class="alert alert-warning" role="alert">
-    O DreamNumbers ainda não suporta histórico de sorteios para o EuroMilhões. Por favor, selecione o EuroDreams para visualizar o histórico de sorteios.
+<h3>Histórico de sorteios do EuroMilhões</h3>
+<p>
+    Explore o histórico dos últimos sorteios do EuroMilhões, incluindo as chaves sorteadas, datas e estrelas. Use os filtros para visualizar os sorteios mais recentes ou para analisar tendências ao longo do tempo.
+</p>
+
+<div class="mb-3">
+    <label>Intervalo:</label>
+    <select class="form-select w-auto" @bind="selectedInterval" @oninput="OnIntervalChanged">
+        <option value="20">Últimos 20</option>
+        <option value="40">Últimos 40</option>
+        <option value="60">Últimos 60</option>
+    </select>
 </div>
 
+@if (filteredDraws == null)
+{
+    <p>Carregando sorteios...</p>
+}
+else
+{
+    <div>
+        <p>Exibindo os últimos @filteredDraws.Count sorteios.</p>
+    </div>
+    <div class="table-responsive pb-3">
+        <table class="table table-bordered table-striped">
+            <thead>
+                <tr class="text-center text-nowrap">
+                    <th>Data</th>
+                    <th>Sorteio</th>
+                    <th>Números</th>
+                    <th>Estrelas</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var draw in filteredDraws)
+                {
+                    <tr class="text-center text-nowrap">
+                        <td>@draw.Date.ToString("dd/MM/yyyy")</td>
+                        <td>@draw.DrawNumber</td>
+                        <td>@string.Join(", ", draw.Numbers)</td>
+                        <td>@string.Join(", ", draw.Stars)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+}
+
 @code {
+    private List<EuroMillionDraw>? allDraws;
+    private List<EuroMillionDraw>? filteredDraws;
+    private int selectedInterval = 20;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadDraws();
+    }
+
+    private void ApplyFilter()
+    {
+        if (selectedInterval == 0)
+        {
+            filteredDraws = allDraws?
+                .OrderByDescending(d => d.Date)
+                .ToList();
+        }
+        else
+        {
+            filteredDraws = allDraws?
+                .OrderByDescending(d => d.Date)
+                .Take(selectedInterval)
+                .ToList();
+        }
+    }
+
+    private void OnIntervalChanged(ChangeEventArgs e)
+    {
+        selectedInterval = int.Parse(e.Value?.ToString() ?? "60");
+        ApplyFilter();
+    }
+
+    private async Task ReloadDraws()
+    {
+        allDraws = await DrawRepository.GetAllAsync();
+        ApplyFilter();
+
+        StateHasChanged();
+    }
 
 }
