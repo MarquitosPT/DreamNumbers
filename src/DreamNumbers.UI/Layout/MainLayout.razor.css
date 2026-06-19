@@ -45,14 +45,6 @@
 
 /* Barra de menus fixa dentro do main */
 .menu-bar {
-    /*height: 50px;
-    background: #eee;
-    box-sizing: border-box;
-    padding: 4px 20px;
-    flex-shrink: 0;
-    display: flex;
-    align-items: center;
-    justify-content: end;*/
 }
 
 /* Conteúdo com scroll vertical */
@@ -190,6 +182,7 @@
     .menu-toggle {
         background: #eee;
         color: black;
+        height: 49px;
     }
 
         .menu-toggle.open {
@@ -197,7 +190,10 @@
         }
 
     .menu-bar {
+        height: 50px;
         padding-left: 50px;
+        background: #eee;
+        border-bottom: 1px solid #ccc;
     }
 }
 
