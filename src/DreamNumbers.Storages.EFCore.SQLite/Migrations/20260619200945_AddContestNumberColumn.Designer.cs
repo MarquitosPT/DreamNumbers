@@ -3,6 +3,7 @@ using System;
 using DreamNumbers.Storages.EFCore.SQLite.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DreamNumbers.Storages.EFCore.SQLite.Migrations
 {
     [DbContext(typeof(DreamNumbersDbContext))]
-    partial class DreamNumbersDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260619200945_AddContestNumberColumn")]
+    partial class AddContestNumberColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.9");

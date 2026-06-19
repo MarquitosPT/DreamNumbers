@@ -16,7 +16,7 @@ namespace DreamNumbers.Storages.EFCore.DbContexts.Configurations
             builder.Property(e => e.DrawNumber).HasMaxLength(16).IsRequired();
             builder.Property(e => e.Numbers).IsRequired();
             builder.Property(e => e.Stars).IsRequired();
-
+            builder.Property(e => e.ContestNumber).IsRequired();
         }
     }
 }

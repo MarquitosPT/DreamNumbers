@@ -11,5 +11,7 @@ namespace DreamNumbers.Storages.EFCore.Entities
         public List<int> Numbers { get; set; } = [];
 
         public List<int> Stars { get; set; } = [];
+
+        public int ContestNumber { get; set; }
     }
 }

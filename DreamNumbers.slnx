@@ -21,6 +21,7 @@
   <Folder Name="/Infrastructure/" />
   <Folder Name="/Infrastructure/Services/">
     <Project Path="src/DreamNumbers.Services.EUDreams/DreamNumbers.Services.EUDreams.csproj" Id="f2818fd1-f503-46b6-8781-7fe44d81dee8" />
+    <Project Path="src/DreamNumbers.Services.JSC/DreamNumbers.Services.JSC.csproj" Id="f789c316-e02d-4946-9335-f10c0be70562" />
   </Folder>
   <Folder Name="/Infrastructure/Storages/">
     <Project Path="src/DreamNumbers.Storages.EFCore.SQLite/DreamNumbers.Storages.EFCore.SQLite.csproj" Id="65cb7e0f-ef80-4f42-ab83-c78516e6cd07" />

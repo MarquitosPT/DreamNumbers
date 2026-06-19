@@ -12,7 +12,8 @@ internal static class EuroMillionDrawMapper
             Date = model.Date,
             DrawNumber = model.DrawNumber,
             Numbers = model.Numbers,
-            Stars = model.Stars
+            Stars = model.Stars,
+            ContestNumber = model.ContestNumber
         };
     }
 
@@ -24,7 +25,8 @@ internal static class EuroMillionDrawMapper
             Date = entity.Date,
             DrawNumber = entity.DrawNumber,
             Numbers = entity.Numbers,
-            Stars = entity.Stars
+            Stars = entity.Stars,
+            ContestNumber = entity.ContestNumber
         };
     }
 }

@@ -1,6 +1,7 @@
 using DreamNumbers.ScheduledTasks;
 using DreamNumbers.Services;
 using DreamNumbers.Services.EUDreams.Extensions.Configuration;
+using DreamNumbers.Services.JSC.Extensions.Configuration;
 using DreamNumbers.Strategies;
 using Marquitos.Schedulers;
 using Marquitos.Schedulers.Extensions.Configuration;
@@ -28,6 +29,7 @@ namespace DreamNumbers.Extensions.Configuration
         {
             // Application services
             services.AddScoped<IDrawUpdateService, DrawUpdateService>();
+            services.AddScoped<IDrawUpdateService, EuroMillionsDrawUpdateService>();
             services.AddScoped<IStatisticsService, StatisticsService>();
             services.AddScoped<ICombinationGenerationPresetService, CombinationGenerationPresetService>();
             services.AddScoped<ISimulationProfileService, SimulationProfileService>();
@@ -48,6 +50,7 @@ namespace DreamNumbers.Extensions.Configuration
             services.AddScoped<IScoringStrategy, CompositeStrategy>();
 
             services.AddEUDreamsService();
+            services.AddJSCService();
 
             return services;
         }
