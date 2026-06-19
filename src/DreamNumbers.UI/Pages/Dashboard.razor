@@ -100,9 +100,9 @@ else
                     {
                         <tr class="text-center text-nowrap @(s.CurrentAbsence >= 10 ? "high-absence" : "")">
                             <td>@s.Number</td>
-                            <td>@s.Frequency20</td>
-                            <td>@s.Frequency40</td>
-                            <td>@s.Frequency60</td>
+                            <td>@s.Frequency20 <small><i>(@Math.Round((double)s.Frequency20 / 20 * 100, 2)%)</i></small></td>
+                            <td>@s.Frequency40 <small><i>(@Math.Round((double)s.Frequency40 / 40 * 100, 2)%)</i></small></td>
+                            <td>@s.Frequency60 <small><i>(@Math.Round((double)s.Frequency60 / 60 * 100, 2)%)</i></small></td>
                             <td>@s.CurrentAbsence</td>
                             <td>@s.EstimatedProbability.ToString("P2")</td>
                         </tr>
@@ -129,9 +129,9 @@ else
                     {
                         <tr class="text-center text-nowrap @(stat.CurrentAbsence >= 10 ? "high-absence" : "")">
                             <td>@stat.Number</td>
-                            <td>@stat.Frequency20</td>
-                            <td>@stat.Frequency40</td>
-                            <td>@stat.Frequency60</td>
+                            <td>@stat.Frequency20 <small><i>(@Math.Round((double)stat.Frequency20 / 20 * 100, 2)%)</i></small></td>
+                            <td>@stat.Frequency40 <small><i>(@Math.Round((double)stat.Frequency40 / 40 * 100, 2)%)</i></small></td>
+                            <td>@stat.Frequency60 <small><i>(@Math.Round((double)stat.Frequency60 / 60 * 100, 2)%)</i></small></td>
                             <td>@stat.CurrentAbsence</td>
                             <td>@stat.EstimatedProbability.ToString("P2")</td>
                         </tr>
