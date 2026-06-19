@@ -16,7 +16,7 @@ namespace DreamNumbers.Extensions.Configuration
             services.AddSchedulerService();
             services.AddScheduledTask<DrawUpdateTask>(o =>
             {
-                var nextMinute = DateTime.Now.AddMinutes(2).Minute;
+                var nextMinute = Random.Shared.Next(0, 59);
 
                 o.Schedule = Cron.Hourly(nextMinute);
                 o.IsEnabled = true;
@@ -33,7 +33,7 @@ namespace DreamNumbers.Extensions.Configuration
             services.AddScoped<ISimulationProfileService, SimulationProfileService>();
             services.AddScoped<ISimulationEngine, SimulationEngine>();
 
-            // Buliders e Factories
+            // Builders and Factories
             services.AddSingleton<IStrategyBuilder, StrategyBuilder>();
             services.AddSingleton<IStrategyFactory, StrategyFactory>();
 
