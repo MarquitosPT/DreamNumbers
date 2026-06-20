@@ -15,5 +15,15 @@ namespace DreamNumbers.Strategies
             IReadOnlyList<Draw> draws,
             IReadOnlyList<DreamNumberStatistics> stats,
             StrategyConfig config);
+
+        Dictionary<int, double> CalculateNumberScores(
+            IReadOnlyList<EuroMillionDraw> draws,
+            IReadOnlyList<NumberStatistics> stats,
+            StrategyConfig config);
+
+        Dictionary<int, double> CalculateStarScores(
+            IReadOnlyList<EuroMillionDraw> draws,
+            IReadOnlyList<StarStatistics> stats,
+            StrategyConfig config);
     }
 }

@@ -24,7 +24,6 @@ namespace DreamNumbers.Services
                     Description = "Gera combinações usando sempre os números com maior score.",
                     Mode = CombinationGenerationMode.Deterministic,
                     DefaultCombinationCount = 5,
-                    NumbersPerCombination = 6,
                     IsPreset = true,
                     IsActive = true
                 },
@@ -35,7 +34,6 @@ namespace DreamNumbers.Services
                     Description = "Gera combinações usando sorteio ponderado pelos scores.",
                     Mode = CombinationGenerationMode.Probabilistic,
                     DefaultCombinationCount = 5,
-                    NumbersPerCombination = 6,
                     IsPreset = true
                 },
 
@@ -46,7 +44,6 @@ namespace DreamNumbers.Services
                     Mode = CombinationGenerationMode.Hybrid,
                     HybridTopPercentage = 0.7,
                     DefaultCombinationCount = 5,
-                    NumbersPerCombination = 6,
                     IsPreset = true
                 },
                 new CombinationGenerationPreset
@@ -59,7 +56,6 @@ namespace DreamNumbers.Services
                     SimilarityAvoidance = 0.4,
                     DreamTopBias = 0.7,
                     DefaultCombinationCount = 5,
-                    NumbersPerCombination = 6,
                     IsPreset = true
                 }
             ]);

@@ -3,29 +3,20 @@ using DreamNumbers.Models;
 
 namespace DreamNumbers.Services
 {
-    public sealed class SimulationEngine : ISimulationEngine
+    internal class EuroMillionsSimulationEngine(IStatisticsService statisticsService,
+        ISimulationProfileService profileService,
+        IStrategyBuilder strategyBuilder,
+        ICombinationGenerationPresetService generationPresetService) : IEuroMillionsSimulationEngine
     {
-        private const int NumbersPerCombination = 6;
+        private const int NumbersPerCombination = 5;
+        private const int StarsPerCombination = 2;
 
-        private readonly IStatisticsService _statisticsService;
-        private readonly ISimulationProfileService _profileService;
-        private readonly IStrategyBuilder _strategyBuilder;
-        private readonly ICombinationGenerationPresetService _generationPresetService;
+        private readonly IStatisticsService _statisticsService = statisticsService;
+        private readonly ISimulationProfileService _profileService = profileService;
+        private readonly IStrategyBuilder _strategyBuilder = strategyBuilder;
+        private readonly ICombinationGenerationPresetService _generationPresetService = generationPresetService;
 
-        public SimulationEngine(
-            IStatisticsService statisticsService,
-            ISimulationProfileService profileService,
-            IStrategyBuilder strategyBuilder,
-            ICombinationGenerationPresetService generationPresetService)
-        {
-            _statisticsService = statisticsService;
-            _profileService = profileService;
-            _strategyBuilder = strategyBuilder;
-            _generationPresetService = generationPresetService;
-        }
-
-        public SimulationResult RunSimulation(
-            IReadOnlyList<Draw> draws)
+        public EuroMillionsSimulationResult RunSimulation(IReadOnlyList<EuroMillionDraw> draws)
         {
             if (draws.Count == 0)
                 throw new InvalidOperationException("Não existem sorteios para simular.");
@@ -34,38 +25,35 @@ namespace DreamNumbers.Services
             var profile = _profileService.GetActiveProfile();
             var generationPreset = _generationPresetService.GetActivePreset();
 
-
             // 2. Construir estratégia
             var strategy = _strategyBuilder.Build(profile);
 
             // 3. Calcular estatísticas
-            var mainStats = _statisticsService.CalculateMainNumberStatistics(draws, profile.Config.MaxMainNumber);
-            var dreamStats = _statisticsService.CalculateDreamNumberStatistics(draws, profile.Config.MaxDreamNumber);
+            var numberStats = _statisticsService.CalculateNumberStatistics(draws, profile.Config.MaxMainNumber);
+            var starStats = _statisticsService.CalculateStarStatistics(draws, profile.Config.MaxDreamNumber);
 
             // 4. Calcular scores
-            var mainScores = strategy.CalculateMainNumberScores(draws, mainStats, profile.Config);
-            var dreamScores = strategy.CalculateDreamNumberScores(draws, dreamStats, profile.Config);
+            var numberScores = strategy.CalculateNumberScores(draws, numberStats, profile.Config);
+            var starScores = strategy.CalculateStarScores(draws, starStats, profile.Config);
 
             // 5. Gerar combinações
             var combinations = generationPreset.Mode switch
             {
                 CombinationGenerationMode.Deterministic =>
-                    GenerateDeterministic(mainScores, dreamScores,
+                    GenerateDeterministic(numberScores, starScores,
                         generationPreset.DefaultCombinationCount),
 
                 CombinationGenerationMode.Probabilistic =>
-                    GenerateProbabilistic(mainScores, dreamScores,
+                    GenerateProbabilistic(numberScores, starScores,
                         generationPreset.DefaultCombinationCount),
 
                 CombinationGenerationMode.Hybrid =>
-                    GenerateHybrid(mainScores, dreamScores,
+                    GenerateHybrid(numberScores, starScores,
                         generationPreset.DefaultCombinationCount,
                         generationPreset.HybridTopPercentage),
 
                 CombinationGenerationMode.SmartHybrid2 =>
-                    GenerateSmartHybrid2(
-                        mainScores,
-                        dreamScores,
+                    GenerateSmartHybrid2(numberScores, starScores,
                         generationPreset.DefaultCombinationCount,
                         generationPreset.HybridTopPercentage,
                         generationPreset.DiversityPenalty,
@@ -75,52 +63,52 @@ namespace DreamNumbers.Services
                 _ => throw new NotImplementedException()
             };
 
-            return new SimulationResult
+            return new EuroMillionsSimulationResult
             {
                 Combinations = combinations,
-                MainScores = mainScores,
-                DreamScores = dreamScores
+                NumberScores = numberScores,
+                StarScores = starScores
             };
         }
 
-        private static List<SimulatedCombination> GenerateDeterministic(
+        private static List<EuroMillionsSimulatedCombination> GenerateDeterministic(
             Dictionary<int, double> mainScores,
-            Dictionary<int, double> dreamScores,
+            Dictionary<int, double> starScores,
             int count)
         {
             var orderedMain = mainScores.OrderByDescending(kv => kv.Value).Select(kv => kv.Key).ToList();
-            var orderedDream = dreamScores.OrderByDescending(kv => kv.Value).Select(kv => kv.Key).ToList();
+            var orderedStar = starScores.OrderByDescending(kv => kv.Value).Select(kv => kv.Key).ToList();
 
-            var combinations = new List<SimulatedCombination>();
+            var combinations = new List<EuroMillionsSimulatedCombination>();
 
             for (int i = 0; i < count; i++)
             {
-                combinations.Add(new SimulatedCombination
+                combinations.Add(new EuroMillionsSimulatedCombination
                 {
-                    Numbers = orderedMain.Skip(i).Take(NumbersPerCombination).OrderBy(n => n).ToList(),
-                    DreamNumber = orderedDream[i % orderedDream.Count]
+                    Numbers = [.. orderedMain.Skip(i).Take(NumbersPerCombination).OrderBy(n => n)],
+                    Stars = [.. orderedStar.Skip(i).Take(StarsPerCombination).OrderBy(n => n)]
                 });
             }
 
             return combinations;
         }
 
-        private static List<SimulatedCombination> GenerateProbabilistic(
+        private static List<EuroMillionsSimulatedCombination> GenerateProbabilistic(
             Dictionary<int, double> mainScores,
-            Dictionary<int, double> dreamScores,
+            Dictionary<int, double> starScores,
             int count)
         {
-            var combinations = new List<SimulatedCombination>();
+            var combinations = new List<EuroMillionsSimulatedCombination>();
 
             for (int i = 0; i < count; i++)
             {
                 var numbers = WeightedRandomSelection(mainScores, NumbersPerCombination);
-                var dream = WeightedRandomSelection(dreamScores, 1).First();
+                var stars = WeightedRandomSelection(starScores, StarsPerCombination);
 
-                combinations.Add(new SimulatedCombination
+                combinations.Add(new EuroMillionsSimulatedCombination
                 {
-                    Numbers = numbers.OrderBy(n => n).ToList(),
-                    DreamNumber = dream
+                    Numbers = [.. numbers.OrderBy(n => n)],
+                    Stars = [.. stars.OrderBy(n => n)]
                 });
             }
 
@@ -163,27 +151,26 @@ namespace DreamNumbers.Services
                 pool.Remove(chosen);
             }
 
-            return selected;
+            return [.. selected.OrderBy(n => n)];
         }
 
-        private static List<SimulatedCombination> GenerateHybrid(
-            Dictionary<int, double> mainScores,
-            Dictionary<int, double> dreamScores,
+        private static List<EuroMillionsSimulatedCombination> GenerateHybrid(
+            Dictionary<int, double> numberScores,
+            Dictionary<int, double> starScores,
             int count,
             double topPercentage)
         {
-            var orderedMain = mainScores
+            var orderedNumbers = numberScores
                 .OrderByDescending(kv => kv.Value)
                 .Select(kv => kv.Key)
                 .ToList();
 
-            var orderedDream = dreamScores
+            var orderedStars = starScores
                 .OrderByDescending(kv => kv.Value)
                 .Select(kv => kv.Key)
                 .ToList();
 
-            var combinations = new List<SimulatedCombination>();
-            var rnd = new Random();
+            var combinations = new List<EuroMillionsSimulatedCombination>();
 
             int topCount = (int)Math.Round(NumbersPerCombination * topPercentage);
             int randomCount = NumbersPerCombination - topCount;
@@ -193,48 +180,51 @@ namespace DreamNumbers.Services
                 var combo = new List<int>();
 
                 // Parte determinística (Top-N)
-                combo.AddRange(orderedMain.Take(topCount));
+                combo.AddRange(orderedNumbers.Take(topCount));
 
                 // Parte probabilística
-                var randoms = WeightedRandomSelection(mainScores, randomCount);
+                var randoms = WeightedRandomSelection(numberScores, randomCount);
                 combo.AddRange(randoms);
 
-                combinations.Add(new SimulatedCombination
+                // Seleção de estrelas
+                var stars = WeightedRandomSelection(starScores, StarsPerCombination);
+
+                combinations.Add(new EuroMillionsSimulatedCombination
                 {
-                    Numbers = combo.OrderBy(n => n).ToList(),
-                    DreamNumber = orderedDream[rnd.Next(orderedDream.Count)]
+                    Numbers = [.. combo.OrderBy(n => n)],
+                    Stars = [.. stars.OrderBy(n => n)]
                 });
             }
 
             return combinations;
         }
 
-        private static List<SimulatedCombination> GenerateSmartHybrid2(
-            Dictionary<int, double> mainScores,
-            Dictionary<int, double> dreamScores,
+        private static List<EuroMillionsSimulatedCombination> GenerateSmartHybrid2(
+            Dictionary<int, double> numberScores,
+            Dictionary<int, double> starScores,
             int count,
             double topPercentage,
             double diversityPenalty,
             double similarityAvoidance,
             double dreamTopBias)
         {
-            var orderedMain = mainScores
+            var orderedNumbers = numberScores
                 .OrderByDescending(kv => kv.Value)
                 .Select(kv => kv.Key)
                 .ToList();
 
-            var orderedDream = dreamScores
+            var orderedStars = starScores
                 .OrderByDescending(kv => kv.Value)
                 .Select(kv => kv.Key)
                 .ToList();
 
-            var combinations = new List<SimulatedCombination>();
+            var combinations = new List<EuroMillionsSimulatedCombination>();
             var rnd = new Random();
 
             int topCount = (int)Math.Round(NumbersPerCombination * topPercentage);
             int randomCount = NumbersPerCombination - topCount;
 
-            var globalUsage = orderedMain.ToDictionary(n => n, n => 0);
+            var globalUsage = orderedNumbers.ToDictionary(n => n, n => 0);
 
             for (int i = 0; i < count; i++)
             {
@@ -242,11 +232,11 @@ namespace DreamNumbers.Services
 
                 // 1) Núcleo forte com rotação
                 int offset = i % Math.Max(1, topCount);
-                var core = orderedMain.Skip(offset).Take(topCount).ToList();
+                var core = orderedNumbers.Skip(offset).Take(topCount).ToList();
                 foreach (var n in core) comboSet.Add(n);
 
                 // 2) Penalização de diversidade global
-                var adjustedScores = mainScores.ToDictionary(
+                var adjustedScores = numberScores.ToDictionary(
                     kv => kv.Key,
                     kv =>
                     {
@@ -277,18 +267,13 @@ namespace DreamNumbers.Services
                 // 5) Atualizar uso global
                 foreach (var n in comboSet) globalUsage[n]++;
 
-                // 6) DreamNumber inteligente
-                int dreamTopK = Math.Max(3, (int)(orderedDream.Count * 0.3));
-                bool useTopDream = rnd.NextDouble() < dreamTopBias;
+                // 6) Estrelas com viés para as mais pontuadas
+                var stars = WeightedRandomSelection(starScores, StarsPerCombination);
 
-                int dream = useTopDream
-                    ? orderedDream[rnd.Next(dreamTopK)]
-                    : WeightedRandomSelection(dreamScores, 1).First();
-
-                combinations.Add(new SimulatedCombination
+                combinations.Add(new EuroMillionsSimulatedCombination
                 {
-                    Numbers = comboSet.OrderBy(n => n).ToList(),
-                    DreamNumber = dream
+                    Numbers = [.. comboSet.OrderBy(n => n)],
+                    Stars = [.. stars.OrderBy(n => n)]
                 });
             }
 

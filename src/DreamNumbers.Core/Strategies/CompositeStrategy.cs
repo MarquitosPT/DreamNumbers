@@ -34,6 +34,22 @@ namespace DreamNumbers.Strategies
             return Combine(s => s.CalculateDreamNumberScores(draws, stats, config));
         }
 
+        public Dictionary<int, double> CalculateNumberScores(
+            IReadOnlyList<EuroMillionDraw> draws,
+            IReadOnlyList<NumberStatistics> stats,
+            StrategyConfig config)
+        {
+            return Combine(s => s.CalculateNumberScores(draws, stats, config));
+        }
+
+        public Dictionary<int, double> CalculateStarScores(
+            IReadOnlyList<EuroMillionDraw> draws,
+            IReadOnlyList<StarStatistics> stats,
+            StrategyConfig config)
+        {
+            return Combine(s => s.CalculateStarScores(draws, stats, config));
+        }
+
         private Dictionary<int, double> Combine(
             Func<IScoringStrategy, Dictionary<int, double>> selector)
         {

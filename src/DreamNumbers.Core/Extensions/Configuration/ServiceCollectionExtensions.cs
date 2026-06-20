@@ -34,6 +34,7 @@ namespace DreamNumbers.Extensions.Configuration
             services.AddScoped<ICombinationGenerationPresetService, CombinationGenerationPresetService>();
             services.AddScoped<ISimulationProfileService, SimulationProfileService>();
             services.AddScoped<ISimulationEngine, SimulationEngine>();
+            services.AddScoped<IEuroMillionsSimulationEngine, EuroMillionsSimulationEngine>();
             services.AddScoped<ILotterySelector, LotterySelector>();
 
             // Builders and Factories

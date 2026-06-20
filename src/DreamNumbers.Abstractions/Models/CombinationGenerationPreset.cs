@@ -36,11 +36,6 @@ namespace DreamNumbers.Models
         public int DefaultCombinationCount { get; init; } = 5;
 
         /// <summary>
-        /// Quantos números por combinação.
-        /// </summary>
-        public int NumbersPerCombination { get; init; } = 6;
-
-        /// <summary>
         /// Indica se este preset é um dos presets predefinidos (true)
         /// ou um preset personalizado criado pelo utilizador (false).
         /// </summary>

@@ -5,6 +5,9 @@ namespace DreamNumbers.Models
         public int MaxMainNumber { get; init; } = 40;
         public int MaxDreamNumber { get; init; } = 5;
 
+        public int MaxEuroMillionsNumber { get; init; } = 50;
+        public int MaxEuroMillionsStar { get; init; } = 12;
+
         public int WindowSize { get; init; } = 0;
 
         public bool NormalizeScores { get; init; } = true;

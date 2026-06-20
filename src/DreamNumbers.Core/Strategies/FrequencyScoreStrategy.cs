@@ -18,6 +18,18 @@ namespace DreamNumbers.Strategies
             StrategyConfig config)
             => CalculateScores(stats, draws.Count, config);
 
+        public Dictionary<int, double> CalculateNumberScores(
+            IReadOnlyList<EuroMillionDraw> draws,
+            IReadOnlyList<NumberStatistics> stats,
+            StrategyConfig config)
+            => CalculateScores(stats, draws.Count, config);
+
+        public Dictionary<int, double> CalculateStarScores(
+            IReadOnlyList<EuroMillionDraw> draws,
+            IReadOnlyList<StarStatistics> stats,
+            StrategyConfig config)
+            => CalculateScores(stats, draws.Count, config);
+
         private static Dictionary<int, double> CalculateScores<T>(
             IReadOnlyList<T> stats,
             int interval,
