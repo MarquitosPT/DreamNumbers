@@ -1,10 +1,9 @@
 @page "/"
 @using DreamNumbers.UI.Services
 @inject ILotterySelector LotterySelector
-@inject IDrawStorage DrawStorage
 @inject IFormFactor FormFactor
-
-<PageTitle>Bem-vindo</PageTitle>
+@inject IDrawStorage DrawStorage
+@inject IEuroMillionDrawStorage EuroMillionDrawStorage
 
 <div class="home-container">
 
@@ -12,20 +11,51 @@
         <h1>Bem-vindo</h1>
         <p>
             O DreamNumbers é um projeto open-source dedicado à análise inteligente
-            dos resultados do EuroDreams.
-            Aqui podes explorar estatísticas,
+            dos resultados do EuroDreams e do EuroMilhões.
+            Aqui pode explorar estatísticas,
             acompanhar tendências e descobrir padrões interessantes nos sorteios.
         </p>
         <div class="alert alert-info">
-            Navega pelo menu para acessar as diferentes funcionalidades, como o histórico de sorteios, estatísticas detalhadas e o simulador de combinações.
+            Navegue pelo menu para aceder as diferentes funcionalidades, como o histórico de sorteios, estatísticas detalhadas e o simulador de combinações.
         </div>
     </section>
 
-    <section class="latest-draw pb-3">
-        <h4>Último sorteio</h4>
-        <p>Confere aqui a chave do último sorteio do EuroDreams.</p>
-        <LastDrawCard Draw="@lastDraw" />
-    </section>
+    @if (LotterySelector.GetLottery() == Enums.LotteryGame.EuroDreams)
+    {
+        <PageTitle>Bem-vindo - EuroDreams</PageTitle>
+
+        @if (lastDraw != null)
+        {
+            <section class="last-draw pb-3">
+                <h3>Último sorteio</h3>
+                <p>Confira aqui a chave do último sorteio do EuroDreams.</p>
+                <LastDrawCard Draw="@lastDraw" />
+            </section>
+        }
+    }
+    else if (LotterySelector.GetLottery() == Enums.LotteryGame.EuroMillions)
+    {
+        <PageTitle>Bem-vindo - EuroMilhões</PageTitle>
+
+        @if (lastEuroMillionDraw != null)
+        {
+            <section class="last-draw pb-3">
+                <h3>Último sorteio</h3>
+                <p>Confira aqui a chave do último sorteio do EuroMilhões.</p>
+                <LastEuroMillionDrawCard Draw="@lastEuroMillionDraw" />
+            </section>
+        }
+    }
+    else
+    {
+        <PageTitle>Bem-vindo</PageTitle>
+
+        <section class="last-draw pb-3">
+            <div class="alert alert-warning" role="alert">
+                Por favor, selecione uma lotaria válida para visualizar o último sorteio.
+            </div>
+        </section>
+    }
 
     @if (isWeb)
     {
@@ -34,7 +64,7 @@
                 <div class="col-auto">
                     <div class="alert alert-success">
                         <h4 class="alert-heading">Aplicação Disponível!</h4>
-                        <p>Dream Numbers também está disponível na Microsoft Store.<br /> Descarrega a aplicação hoje mesmo.</p>
+                        <p>Dream Numbers também está disponível na Microsoft Store.<br /> Descarregue a aplicação hoje mesmo.</p>
                         <a class="alert-link" href="https://apps.microsoft.com/detail/9N84KQ7G3QB5" target="_blank" rel="noopener noreferrer">
                             <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAk0lEQVR4nO3XMQ7CMBBE0Tl19la0SJREOYHnHFT0pkgElHa8Ehb6X3I71itcWCIimrPwpnA9f8r6tXVL22pu6MLjfLaeaVvNATAAAQgAewAMoAIIAJ0BMACNAco6dmm5v7cWX7T4cf6Uaz+A/utLuaVt/egR5201B8AABCAA7AEwgAogAHQGwAA0zZcyc4uISDP1AjWXURg49UyHAAAAAElFTkSuQmCC" alt="windows-11">
                             Ver na Microsoft Store
@@ -44,19 +74,31 @@
             </div>
         </section>
     }
-
-
 </div>
 
 @code {
-    private Draw? lastDraw;
     private bool isWeb;
+    private Draw? lastDraw;
+    private EuroMillionDraw? lastEuroMillionDraw;
 
     protected override async Task OnInitializedAsync()
     {
-        LotterySelector.SetVisible(false);
+        LotterySelector.SetVisible(true);
+        LotterySelector.OnLotteryChanged += OnLotteryChanged;
+
+        lastDraw = await DrawStorage.GetLastDrawAsync();
+        lastEuroMillionDraw = await EuroMillionDrawStorage.GetLastDrawAsync();
 
         isWeb = (FormFactor.GetFormFactor() == "Web");
-        lastDraw = await DrawStorage.GetLastDrawAsync();
+    }
+
+    private void OnLotteryChanged(Enums.LotteryGame newLottery)
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        LotterySelector.OnLotteryChanged -= OnLotteryChanged;
     }
 }

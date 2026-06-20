@@ -1,10 +1,8 @@
 .last-draw-card {
-    padding: 1rem;
-    border-radius: 12px;
-    background: #ffffff10;
-    backdrop-filter: blur(6px);
-    border: 1px solid #ffffff20;
+    padding: 1.5rem;
     margin-bottom: 1.5rem;
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+    border: rgb(59, 130, 246);
 }
 
     .last-draw-card .header .title {
