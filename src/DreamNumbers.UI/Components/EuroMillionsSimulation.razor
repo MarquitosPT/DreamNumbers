@@ -1,9 +1,32 @@
 <PageTitle>Simulador - EuroMilhões</PageTitle>
 
-<div class="alert alert-warning" role="alert">
-    O DreamNumbers ainda não suporta simulações para o EuroMilhões. Por favor, selecione o EuroDreams para visualizar o simulador.
+<h3>Simulador de Combinações</h3>
+<p>
+    Configure as estratégias e perfis para gerar combinações de números do EuroMilhões. Experimente diferentes abordagens para encontrar a que melhor se encaixa no seu estilo de jogo.
+</p>
+
+<div class="card p-3 mb-4">
+    <div class="row">
+        <div class="col-xs col-sm-auto">
+            <StrategyProfileSelector />
+        </div>
+        <div class="col-xs col-sm-auto">
+            <GenerationPresetSelector />
+        </div>
+        <div class="col-auto">
+        </div>
+        <div class="col-12">
+            <SmartHybridAdvancedSettings />
+        </div>
+        <div class="col-12">
+            <button class="btn btn-primary" @onclick="RunSimulation">
+                Gerar Combinações
+            </button>
+        </div>
+    </div>
 </div>
 
-@code {
-
+@if (result != null)
+{
+    <EuroMillionsSimulationResultView Result="result" />
 }

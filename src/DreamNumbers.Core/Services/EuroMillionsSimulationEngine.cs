@@ -29,8 +29,8 @@ namespace DreamNumbers.Services
             var strategy = _strategyBuilder.Build(profile);
 
             // 3. Calcular estatísticas
-            var numberStats = _statisticsService.CalculateNumberStatistics(draws, profile.Config.MaxMainNumber);
-            var starStats = _statisticsService.CalculateStarStatistics(draws, profile.Config.MaxDreamNumber);
+            var numberStats = _statisticsService.CalculateNumberStatistics(draws, profile.Config.MaxEuroMillionsNumber);
+            var starStats = _statisticsService.CalculateStarStatistics(draws, profile.Config.MaxEuroMillionsStar);
 
             // 4. Calcular scores
             var numberScores = strategy.CalculateNumberScores(draws, numberStats, profile.Config);
@@ -57,8 +57,7 @@ namespace DreamNumbers.Services
                         generationPreset.DefaultCombinationCount,
                         generationPreset.HybridTopPercentage,
                         generationPreset.DiversityPenalty,
-                        generationPreset.SimilarityAvoidance,
-                        generationPreset.DreamTopBias),
+                        generationPreset.SimilarityAvoidance),
 
                 _ => throw new NotImplementedException()
             };
@@ -205,8 +204,7 @@ namespace DreamNumbers.Services
             int count,
             double topPercentage,
             double diversityPenalty,
-            double similarityAvoidance,
-            double dreamTopBias)
+            double similarityAvoidance)
         {
             var orderedNumbers = numberScores
                 .OrderByDescending(kv => kv.Value)
