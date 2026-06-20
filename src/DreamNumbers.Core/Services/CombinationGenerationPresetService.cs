@@ -49,7 +49,7 @@ namespace DreamNumbers.Services
                 new CombinationGenerationPreset
                 {
                     Name = "Smart Hybrid 2.0",
-                    Description = "Modo avançado com heurísticas de diversidade e DreamNumber inteligente.",
+                    Description = "Modo avançado com heurísticas de diversidade e Nº de Sonho inteligente.",
                     Mode = CombinationGenerationMode.SmartHybrid2,
                     HybridTopPercentage = 0.6,
                     DiversityPenalty = 0.5,

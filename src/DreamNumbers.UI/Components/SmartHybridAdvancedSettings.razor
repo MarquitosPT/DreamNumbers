@@ -1,6 +1,50 @@
 @using DreamNumbers.Enums
 @inject ICombinationGenerationPresetService GenerationService
+@inject ILotterySelector LotterySelector
 
+@if (preset != null)
+{
+    <div class="advanced-settings">
+        <h4>Configurações Avançadas</h4>
+
+        <div class="setting">
+            <label>Percentagem Top-N (@(Math.Round(preset.HybridTopPercentage * 100))%)</label>
+            <RangeSlider Min="0.3" Max="0.9" Step="0.05"
+                         Value="@preset.HybridTopPercentage"
+                         ValueChanged="v => preset.HybridTopPercentage = v"
+                         OnValueUpdated="NotifyUpdate" />
+        </div>
+
+        <div class="setting">
+            <label>Penalização de Repetição (@preset.DiversityPenalty)</label>
+            <RangeSlider Min="0" Max="1.0" Step="0.1"
+                         Value="@preset.DiversityPenalty"
+                         ValueChanged="v => preset.DiversityPenalty = v"
+                         OnValueUpdated="NotifyUpdate" />
+        </div>
+
+        <div class="setting">
+            <label>Evitar Combinações Semelhantes (@preset.SimilarityAvoidance)</label>
+            <RangeSlider Min="0" Max="1.0" Step="0.1"
+                         Value="@preset.SimilarityAvoidance"
+                         ValueChanged="v => preset.SimilarityAvoidance = v"
+                         OnValueUpdated="NotifyUpdate" />
+        </div>
+
+        @if (LotterySelector.GetLottery() == LotteryGame.EuroDreams)
+        {
+            <div class="setting">
+                <label>Bias para Nº de Sonho Top-K (@(Math.Round(preset.DreamTopBias * 100))%)</label>
+                <RangeSlider Min="0.3" Max="1.0" Step="0.05"
+                             Value="@preset.DreamTopBias"
+                             ValueChanged="v => preset.DreamTopBias = v"
+                             OnValueUpdated="NotifyUpdate" />
+            </div>
+        }
+    </div>
+}
+
+                         
 @code {
     private CombinationGenerationPreset? preset;
 
@@ -35,43 +79,4 @@
     {
         GenerationService.OnPresetChanged -= HandlePresetChanged;
     }
-}
-
-@if (preset != null)
-{
-    <div class="advanced-settings">
-        <h4>Configurações Avançadas</h4>
-
-        <div class="setting">
-            <label>Percentagem Top-N (@(Math.Round(preset.HybridTopPercentage * 100))%)</label>
-            <RangeSlider Min="0.3" Max="0.9" Step="0.05"
-                         Value="@preset.HybridTopPercentage"
-                         ValueChanged="v => preset.HybridTopPercentage = v"
-                         OnValueUpdated="NotifyUpdate" />
-        </div>
-
-        <div class="setting">
-            <label>Penalização de Repetição (@preset.DiversityPenalty)</label>
-            <RangeSlider Min="0" Max="1.0" Step="0.1"
-                         Value="@preset.DiversityPenalty"
-                         ValueChanged="v => preset.DiversityPenalty = v"
-                         OnValueUpdated="NotifyUpdate" />
-        </div>
-
-        <div class="setting">
-            <label>Evitar Combinações Semelhantes (@preset.SimilarityAvoidance)</label>
-            <RangeSlider Min="0" Max="1.0" Step="0.1"
-                         Value="@preset.SimilarityAvoidance"
-                         ValueChanged="v => preset.SimilarityAvoidance = v"
-                         OnValueUpdated="NotifyUpdate" />
-        </div>
-
-        <div class="setting">
-            <label>Bias para Dream Top-K (@(Math.Round(preset.DreamTopBias * 100))%)</label>
-            <RangeSlider Min="0.3" Max="1.0" Step="0.05"
-                         Value="@preset.DreamTopBias"
-                         ValueChanged="v => preset.DreamTopBias = v"
-                         OnValueUpdated="NotifyUpdate" />
-        </div>
-    </div>
 }
