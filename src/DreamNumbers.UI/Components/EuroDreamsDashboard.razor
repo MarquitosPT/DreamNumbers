@@ -42,6 +42,12 @@ else
         </div>
     </section>
 
+    <section class="pb-3">
+        <h3>Último sorteio</h3>
+        <p>Confira aqui a chave do último sorteio do EuroDreams.</p>
+        <LastDrawCard Draw="@lastDraw" />
+    </section>
+
 
     <section class="pb-3">
         <h3>Os números mais prováveis</h3>
@@ -149,7 +155,7 @@ else
     private List<DashboardMainStatistics> stats = new();
     private List<DashboardDreamStatistics> dreamStats = new();
     private int selectedInterval = 60;
-
+    private Draw? lastDraw;
     // Sorting state for Números
     private string currentSortColumn = nameof(DashboardMainStatistics.Number);
     private bool sortAscending = true;
@@ -160,7 +166,8 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        allDraws = await DrawStorage.GetAllAsync();
+        allDraws = await DrawStorage.GetLastDrawsAsync(60);
+        lastDraw = allDraws.FirstOrDefault();
 
         LoadStatistics();
     }

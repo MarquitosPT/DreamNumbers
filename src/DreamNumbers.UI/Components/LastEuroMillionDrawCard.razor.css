@@ -1,0 +1,48 @@
+.last-draw-card {
+    padding: 1rem;
+    border-radius: 12px;
+    background: #ffffff10;
+    backdrop-filter: blur(6px);
+    border: 1px solid #ffffff20;
+    margin-bottom: 1.5rem;
+}
+
+    .last-draw-card .header .title {
+        font-weight: 600;
+        font-size: 1.1rem;
+    }
+
+    .last-draw-card .numbers {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+    }
+
+    .last-draw-card .ball,
+    .last-draw-card .star {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+        color: white;
+    }
+
+    .last-draw-card .ball {
+        background: #3b82f6;
+    }
+
+    .last-draw-card .star {
+        background: #f59e0b;
+    }
+
+    .last-draw-card .plus {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }

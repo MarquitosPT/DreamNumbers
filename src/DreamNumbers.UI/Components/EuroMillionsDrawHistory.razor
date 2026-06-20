@@ -86,7 +86,7 @@ else
 
     private async Task ReloadDraws()
     {
-        allDraws = await DrawRepository.GetAllAsync();
+        allDraws = await DrawRepository.GetLastDrawsAsync(60);
         ApplyFilter();
 
         StateHasChanged();

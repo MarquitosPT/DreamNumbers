@@ -27,43 +27,50 @@ namespace DreamNumbers.Storages.EFCore.Storages
         public EuroMillionDrawStorage(TContext context, ILogger<EuroMillionDrawStorage<TContext>> logger)
         {
             Context = context ?? throw new ArgumentNullException(nameof(context));
-            Logger = logger;
+            Logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
-        public async Task<List<EuroMillionDraw>> GetAllAsync()
+        public async Task<List<EuroMillionDraw>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var result = await Context.EuroMillionDraws.OrderByDescending(d => d.Date).AsNoTracking().ToListAsync();
+            var result = await Context.EuroMillionDraws.OrderByDescending(d => d.Date).AsNoTracking().ToListAsync(cancellationToken);
 
-            return [.. result.Select(e => EuroMillionDrawMapper.ToModel(e))];
+            return [.. result.Select(EuroMillionDrawMapper.ToModel)];
         }
 
-        public async Task<EuroMillionDraw?> GetLastDrawAsync()
+        public async Task<List<EuroMillionDraw>> GetLastDrawsAsync(int count, CancellationToken cancellationToken = default)
+        {
+            var result = await Context.EuroMillionDraws.OrderByDescending(d => d.Date).Take(count).AsNoTracking().ToListAsync(cancellationToken);
+
+            return [.. result.Select(EuroMillionDrawMapper.ToModel)];
+        }
+
+        public async Task<EuroMillionDraw?> GetLastDrawAsync(CancellationToken cancellationToken = default)
         {
             var entity = await Context.EuroMillionDraws
                 .OrderByDescending(d => d.Date)
                 .AsNoTracking()
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
 
             return entity == null ? null : EuroMillionDrawMapper.ToModel(entity);
         }
 
-        public async Task<DateTime?> GetLastDrawDateAsync()
+        public async Task<DateTime?> GetLastDrawDateAsync(CancellationToken cancellationToken = default)
         {
             return await Context.EuroMillionDraws
                 .OrderByDescending(d => d.Date)
                 .AsNoTracking()
                 .Select(d => (DateTime?)d.Date)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task AddOrUpdateAsync(EuroMillionDraw draw)
+        public async Task AddOrUpdateAsync(EuroMillionDraw draw, CancellationToken cancellationToken = default)
         {
-            var existingEuroMillionDraw = await Context.EuroMillionDraws.FindAsync(draw.Id);
+            var existingEuroMillionDraw = await Context.EuroMillionDraws.FindAsync(new object[] { draw.Id }, cancellationToken);
             if (existingEuroMillionDraw == null)
             {
                 var entity = EuroMillionDrawMapper.ToEntity(draw);
 
-                await Context.EuroMillionDraws.AddAsync(entity);
+                await Context.EuroMillionDraws.AddAsync(entity, cancellationToken);
 
                 if (Logger.IsEnabled(LogLevel.Information))
                 {
@@ -79,14 +86,14 @@ namespace DreamNumbers.Storages.EFCore.Storages
                     Logger.LogInformation("Updated existing draw '{DrawNumber}' with ID {Id}.", draw.DrawNumber, draw.Id);
                 }
             }
-            await Context.SaveChangesAsync();
+            await Context.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task InsertAsync(EuroMillionDraw draw)
+        public async Task InsertAsync(EuroMillionDraw draw, CancellationToken cancellationToken = default)
         {
             var entity = EuroMillionDrawMapper.ToEntity(draw);
             Context.EuroMillionDraws.Add(entity);
-            await Context.SaveChangesAsync();
+            await Context.SaveChangesAsync(cancellationToken);
 
             if (Logger.IsEnabled(LogLevel.Information))
             {
@@ -94,11 +101,11 @@ namespace DreamNumbers.Storages.EFCore.Storages
             }
         }
 
-        public async Task InsertManyAsync(IEnumerable<EuroMillionDraw> draws)
+        public async Task InsertManyAsync(IEnumerable<EuroMillionDraw> draws, CancellationToken cancellationToken = default)
         {
             var entities = draws.Select(EuroMillionDrawMapper.ToEntity);
             Context.EuroMillionDraws.AddRange(entities);
-            await Context.SaveChangesAsync();
+            await Context.SaveChangesAsync(cancellationToken);
         }
 
     }

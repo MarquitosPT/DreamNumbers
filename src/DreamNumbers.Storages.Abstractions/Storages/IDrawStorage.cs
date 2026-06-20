@@ -4,13 +4,15 @@ namespace DreamNumbers.Storages
 {
     public interface IDrawStorage
     {
-        Task<List<Draw>> GetAllAsync();
-        Task AddOrUpdateAsync(Draw draw);
+        Task<List<Draw>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<List<Draw>> GetLastDrawsAsync(int count, CancellationToken cancellationToken = default);
 
-        Task<Draw?> GetLastDrawAsync();
-        Task<DateTime?> GetLastDrawDateAsync();
-        Task InsertAsync(Draw draw);
-        Task InsertManyAsync(IEnumerable<Draw> draws);
+        Task AddOrUpdateAsync(Draw draw, CancellationToken cancellationToken = default);
+
+        Task<Draw?> GetLastDrawAsync(CancellationToken cancellationToken = default);
+        Task<DateTime?> GetLastDrawDateAsync(CancellationToken cancellationToken = default);
+        Task InsertAsync(Draw draw, CancellationToken cancellationToken = default);
+        Task InsertManyAsync(IEnumerable<Draw> draws, CancellationToken cancellationToken = default);
 
     }
 

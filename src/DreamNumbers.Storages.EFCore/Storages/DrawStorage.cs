@@ -30,14 +30,14 @@ namespace DreamNumbers.Storages.EFCore.Storages
             Logger = logger;
         }
 
-        public async Task AddOrUpdateAsync(Draw draw)
+        public async Task AddOrUpdateAsync(Draw draw, CancellationToken cancellationToken = default)
         {
-            var existingDraw = await Context.Draws.FindAsync(draw.Id);
+            var existingDraw = await Context.Draws.FindAsync([draw.Id], cancellationToken);
             if (existingDraw == null)
             {
                 var entity = DrawMapper.ToEntity(draw);
 
-                await Context.Draws.AddAsync(entity);
+                await Context.Draws.AddAsync(entity, cancellationToken);
 
                 if (Logger.IsEnabled(LogLevel.Information))
                 {
@@ -56,37 +56,44 @@ namespace DreamNumbers.Storages.EFCore.Storages
             await Context.SaveChangesAsync();
         }
 
-        public async Task<List<Draw>> GetAllAsync()
+        public async Task<List<Draw>> GetAllAsync(CancellationToken cancellationToken = default)
         {
-            var result = await Context.Draws.OrderByDescending(d => d.Date).AsNoTracking().ToListAsync();
+            var result = await Context.Draws.OrderByDescending(d => d.Date).AsNoTracking().ToListAsync(cancellationToken);
 
-            return [.. result.Select(e => DrawMapper.ToModel(e))];
+            return [.. result.Select(DrawMapper.ToModel)];
         }
 
-        public async Task<Draw?> GetLastDrawAsync()
+        public async Task<List<Draw>> GetLastDrawsAsync(int count, CancellationToken cancellationToken = default)
+        {
+            var result = await Context.Draws.OrderByDescending(d => d.Date).Take(count).AsNoTracking().ToListAsync(cancellationToken);
+
+            return [.. result.Select(DrawMapper.ToModel)];
+        }
+
+        public async Task<Draw?> GetLastDrawAsync(CancellationToken cancellationToken = default)
         {
             var entity = await Context.Draws
                 .OrderByDescending(d => d.Date)
                 .AsNoTracking()
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
 
             return entity == null ? null : DrawMapper.ToModel(entity);
         }
 
-        public async Task<DateTime?> GetLastDrawDateAsync()
+        public async Task<DateTime?> GetLastDrawDateAsync(CancellationToken cancellationToken = default)
         {
             return await Context.Draws
                 .OrderByDescending(d => d.Date)
                 .AsNoTracking()
                 .Select(d => (DateTime?)d.Date)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(cancellationToken);
         }
 
-        public async Task InsertAsync(Draw draw)
+        public async Task InsertAsync(Draw draw, CancellationToken cancellationToken = default)
         {
             var entity = DrawMapper.ToEntity(draw);
             Context.Draws.Add(entity);
-            await Context.SaveChangesAsync();
+            await Context.SaveChangesAsync(cancellationToken);
 
             if (Logger.IsEnabled(LogLevel.Information))
             {
@@ -94,11 +101,11 @@ namespace DreamNumbers.Storages.EFCore.Storages
             }
         }
 
-        public async Task InsertManyAsync(IEnumerable<Draw> draws)
+        public async Task InsertManyAsync(IEnumerable<Draw> draws, CancellationToken cancellationToken = default)
         {
             var entities = draws.Select(DrawMapper.ToEntity);
             Context.Draws.AddRange(entities);
-            await Context.SaveChangesAsync();
+            await Context.SaveChangesAsync(cancellationToken);
         }
 
     }

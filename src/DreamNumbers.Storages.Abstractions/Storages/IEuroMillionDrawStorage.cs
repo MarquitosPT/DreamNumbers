@@ -4,12 +4,14 @@ namespace DreamNumbers.Storages
 {
     public interface IEuroMillionDrawStorage
     {
-        Task<List<EuroMillionDraw>> GetAllAsync();
-        Task<EuroMillionDraw?> GetLastDrawAsync();
-        Task<DateTime?> GetLastDrawDateAsync();
-        Task AddOrUpdateAsync(EuroMillionDraw draw);
-        Task InsertAsync(EuroMillionDraw draw);
-        Task InsertManyAsync(IEnumerable<EuroMillionDraw> draws);
+        Task<List<EuroMillionDraw>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<List<EuroMillionDraw>> GetLastDrawsAsync(int count, CancellationToken cancellationToken = default);
+
+        Task<EuroMillionDraw?> GetLastDrawAsync(CancellationToken cancellationToken = default);
+        Task<DateTime?> GetLastDrawDateAsync(CancellationToken cancellationToken = default);
+        Task AddOrUpdateAsync(EuroMillionDraw draw, CancellationToken cancellationToken = default);
+        Task InsertAsync(EuroMillionDraw draw, CancellationToken cancellationToken = default);
+        Task InsertManyAsync(IEnumerable<EuroMillionDraw> draws, CancellationToken cancellationToken = default);
 
     }
 
