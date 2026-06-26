@@ -3,7 +3,6 @@ using DreamNumbers.Services;
 using DreamNumbers.Services.EUDreams.Extensions.Configuration;
 using DreamNumbers.Services.JSC.Extensions.Configuration;
 using DreamNumbers.Strategies;
-using Marquitos.Schedulers;
 using Marquitos.Schedulers.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -19,7 +18,7 @@ namespace DreamNumbers.Extensions.Configuration
             {
                 var nextMinute = Random.Shared.Next(0, 59);
 
-                o.Schedule = Cron.Hourly(nextMinute);
+                o.Schedule = $"{nextMinute} 7-23 * * *";
                 o.IsEnabled = true;
             });
 
