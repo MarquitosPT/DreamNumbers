@@ -13,69 +13,81 @@ namespace DreamNumbers.Services.JSC.Services
             _http = http;
         }
 
-        public async Task<EuroMillionsResult?> GetResultAsync(int contestNumber, int drawIndex)
+        public async Task<EuroMillionsResult?> GetResultAsync(int contestNumber, DateTime nextDate, int nextDrawIndex)
         {
-            string url = $"https://www.jogossantacasa.pt/web/SCCartazResult/euroMilhoes?selectContest={contestNumber}";
-
-            string html;
-
-            try
+            int maxContestGap = 500; // Número máximo de contest que pode tentar buscar antes de desistir
+            int counter = 0;
+            do
             {
-                html = await _http.GetStringAsync(url);
+                contestNumber++; // Incrementa o número do concurso para buscar o próximo sorteio
+                counter++;
 
-                await Task.Delay(Random.Shared.Next(1000, 10000)); // Atraso para evitar bloqueios por scraping
-            }
-            catch (HttpRequestException e)
-            {
-                if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+                string url = $"https://www.jogossantacasa.pt/web/SCCartazResult/euroMilhoes?selectContest={contestNumber}";
+                string html;
+                try
+                {
+                    html = await _http.GetStringAsync(url);
+
+                    await Task.Delay(Random.Shared.Next(500, 2000)); // Atraso para evitar bloqueios por scraping
+                }
+                catch (HttpRequestException e)
+                {
+                    if (e.StatusCode == System.Net.HttpStatusCode.NotFound)
+                    {
+                        // Página não existe → sorteio inexistente
+                        return null;
+                    }
+
+                    throw; // Erro inesperado, propagar
+                }
+                catch
                 {
                     // Página não existe → sorteio inexistente
                     return null;
                 }
 
-                throw; // Erro inesperado, propagar
-            }
-            catch
-            {
-                // Página não existe → sorteio inexistente
-                return null;
-            }
+                var doc = new HtmlDocument();
+                doc.LoadHtml(html);
 
-            var doc = new HtmlDocument();
-            doc.LoadHtml(html);
+                // 1) Data do sorteio
+                var dateNode = doc.DocumentNode.SelectSingleNode("//span[@class='dataInfo']");
+                if (dateNode == null)
+                    continue;
 
-            // 1) Data do sorteio
-            var dateNode = doc.DocumentNode.SelectSingleNode("//span[@class='dataInfo']");
-            if (dateNode == null)
-                return null;
+                DateTime parsedDate = ParseDateNode(dateNode.InnerText.Trim());
 
-            DateTime parsedDate = ParseDateNode(dateNode.InnerText.Trim());
+                if (parsedDate != nextDate)
+                    return null;
 
-            // 2) Números principais
-            var numberNodes = doc.DocumentNode.SelectSingleNode("//ul[@class='colums']//li");
-            if (numberNodes == null)
-                return null;
+                // 2) Números principais
+                var numberNodes = doc.DocumentNode.SelectSingleNode("//ul[@class='colums']//li");
+                if (numberNodes == null)
+                    return null;
 
-            var numbers = ParseNumbersNode(numberNodes.InnerText.Trim()).ToList();
+                var numbers = ParseNumbersNode(numberNodes.InnerText.Trim()).ToList();
 
-            // 3) Números das estrelas
-            var starNodes = doc.DocumentNode.SelectSingleNode("//ul[@class='colums']//li");
-            if (starNodes == null)
-                return null;
+                // 3) Números das estrelas
+                var starNodes = doc.DocumentNode.SelectSingleNode("//ul[@class='colums']//li");
+                if (starNodes == null)
+                    return null;
 
-            var stars = ParseStarsNode(starNodes.InnerText.Trim()).ToList();
+                var stars = ParseStarsNode(starNodes.InnerText.Trim()).ToList();
 
-            // 4) Número do sorteio (incremental por ano)
-            string drawNumber = $"{drawIndex:000}/{parsedDate.Year}";
+                // 4) Número do sorteio (incremental por ano)
+                string drawNumber = $"{nextDrawIndex:000}/{parsedDate.Year}";
 
-            return new EuroMillionsResult
-            {
-                Date = parsedDate,
-                DrawNumber = drawNumber,
-                Numbers = numbers,
-                Stars = stars,
-                ContestNumber = contestNumber
-            };
+                return new EuroMillionsResult
+                {
+                    Date = parsedDate,
+                    DrawNumber = drawNumber,
+                    Numbers = numbers,
+                    Stars = stars,
+                    ContestNumber = contestNumber
+                };
+
+            } while (counter < maxContestGap);
+
+            return null; // Não encontrou sorteio válido dentro do limite de tentativas
         }
 
         private static DateTime ParseDateNode(string nodeText)
@@ -89,7 +101,7 @@ namespace DreamNumbers.Services.JSC.Services
 
         private static IEnumerable<int> ParseNumbersNode(string nodeText)
         {
-            Match matchSorteio = Regex.Match(input: nodeText, pattern: @"(\d|\d\d) (\d|\d\d) (\d|\d\d) (\d|\d\d) (\d|\d\d) \+ (\d|\d\d) (\d|\d\d)", options: RegexOptions.IgnoreCase);
+            Match matchSorteio = Regex.Match(input: nodeText, pattern: @"(\d\d|\d) (\d\d|\d) (\d\d|\d) (\d\d|\d) (\d\d|\d) \+ (\d\d|\d) (\d\d|\d)", options: RegexOptions.IgnoreCase);
             string sorteio = matchSorteio.Value.Replace(" + ", "|");
 
             var nodes = sorteio.Split('|', StringSplitOptions.RemoveEmptyEntries);
@@ -105,7 +117,7 @@ namespace DreamNumbers.Services.JSC.Services
 
         private static IEnumerable<int> ParseStarsNode(string nodeText)
         {
-            Match matchSorteio = Regex.Match(input: nodeText, pattern: @"(\d|\d\d) (\d|\d\d) (\d|\d\d) (\d|\d\d) (\d|\d\d) \+ (\d|\d\d) (\d|\d\d)", options: RegexOptions.IgnoreCase);
+            Match matchSorteio = Regex.Match(input: nodeText, pattern: @"(\d\d|\d) (\d\d|\d) (\d\d|\d) (\d\d|\d) (\d\d|\d) \+ (\d\d|\d) (\d\d|\d)", options: RegexOptions.IgnoreCase);
             string sorteio = matchSorteio.Value.Replace(" + ", "|");
 
             var nodes = sorteio.Split('|', StringSplitOptions.RemoveEmptyEntries);

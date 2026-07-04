@@ -46,7 +46,7 @@ namespace DreamNumbers.Services
                 if ((date.DayOfWeek != DayOfWeek.Tuesday) && (date.DayOfWeek != DayOfWeek.Friday))
                     continue;
 
-                var result = await _scraper.GetResultAsync(contestNumber + 1, drawIndex + 1);
+                var result = await _scraper.GetResultAsync(contestNumber, date, drawIndex + 1);
 
                 if (result == null)
                     break;
