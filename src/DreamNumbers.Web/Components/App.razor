@@ -3,14 +3,24 @@
 
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <base href="/" />
     <ResourcePreloader />
+    <link rel="icon" type="image/png" href="_content/DreamNumbers.UI/favicon-32x32.png" sizes="32x32">
+    <link rel="shortcut icon" href="_content/DreamNumbers.UI/favicon.ico">
+    <!-- iPhone / iPad -->
+    <link rel="apple-touch-icon" href="_content/DreamNumbers.UI/apple-touch-icon.png" sizes="180x180">
+    <!-- Android / Chrome -->
+    <link rel="icon" type="image/png" href="_content/DreamNumbers.UI/android-chrome-192x192.png" sizes="192x192">
+    <link rel="icon" type="image/png" href="_content/DreamNumbers.UI/android-chrome-512x512.png" sizes="512x512">
+    <link rel="manifest" href="_content/DreamNumbers.UI/manifest.json">
+
     <link rel="stylesheet" href="_content/DreamNumbers.UI/lib/bootstrap/css/bootstrap.min.css" />
     <link rel="stylesheet" href="_content/DreamNumbers.UI/app.css" />
     <link rel="stylesheet" href="DreamNumbers.Web.styles.css" />
     <ImportMap />
-    <link rel="icon" type="image/x-icon" href="_content/DreamNumbers.UI/favicon.ico">
     <HeadOutlet @rendermode="InteractiveServer" />
 </head>
 

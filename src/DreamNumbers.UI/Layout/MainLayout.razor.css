@@ -5,8 +5,8 @@
     flex-direction: column;
     background: #000f2a;
     top: env(safe-area-inset-top, 0);
-    left: 0;
-    right: 0;
+    left: env(safe-area-inset-left, 0px);
+    right: env(safe-area-inset-right, 0px);
     height: calc(100dvh - env(safe-area-inset-top, 0));
 }
 
