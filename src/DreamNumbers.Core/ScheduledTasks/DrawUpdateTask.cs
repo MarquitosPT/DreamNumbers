@@ -11,7 +11,15 @@ namespace DreamNumbers.ScheduledTasks
         {
             foreach (var updateService in _updateServices)
             {
-                await updateService.UpdateDrawsAsync();
+                try
+                {
+                    await updateService.UpdateDrawsAsync();
+                }
+                catch (Exception ex)
+                {
+                    // Log the exception or handle it as needed
+                    Console.WriteLine($"Error updating draws for {updateService.GetType().Name}: {ex.Message}");
+                }
             }
         }
     }
